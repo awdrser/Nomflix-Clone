@@ -9,15 +9,9 @@ function App() {
     <Router>
       <Header />
       <Switch>
-        <Route path="/">
-          <Home />
-        </Route>
-        <Route path="/tv">
-          <Tv />
-        </Route>
-        <Route path="/search">
-          <Search />
-        </Route>
+        <Route path="/tv" component={Tv} />
+        <Route path="/search" component={Search} />
+        <Route path="/" exact component={Home} />
       </Switch>
     </Router>
   );
