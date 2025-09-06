@@ -1,7 +1,7 @@
-import { Link, useRouteMatch } from "react-router-dom";
-import styled from "styled-components";
 import { motion } from "framer-motion";
 import { useState } from "react";
+import { Link, useRouteMatch } from "react-router-dom";
+import styled from "styled-components";
 
 const Nav = styled.nav`
   display: flex;
@@ -131,6 +131,7 @@ function Header() {
       <Col>
         <Search>
           <motion.svg
+            transition={{ type: "tween", ease: "linear" }}
             animate={{ x: searchOpen ? -200 : 0 }}
             onClick={toggleSearch}
             fill="currentColor"
@@ -143,7 +144,11 @@ function Header() {
               clipRule="evenodd"
             ></path>
           </motion.svg>
-          <Input animate={{ scaleX: searchOpen ? 1 : 0 }} placeholder="name" />
+          <Input
+            transition={{ type: "tween", ease: "linear" }}
+            animate={{ scaleX: searchOpen ? 1 : 0 }}
+            placeholder="name"
+          />
         </Search>
       </Col>
     </Nav>
