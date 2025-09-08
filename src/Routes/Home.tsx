@@ -1,9 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
-import { getMovies, type IGetMoviesResult } from "../api";
-import { styled } from "styled-components";
-import { makeImagePath } from "../utils";
 import { AnimatePresence, motion } from "framer-motion";
 import { useState } from "react";
+import { styled } from "styled-components";
+import { getMovies, type IGetMoviesResult } from "../api";
+import { makeImagePath } from "../utils";
 
 const Wrapper = styled.div`
   background-color: black;
@@ -40,7 +40,7 @@ const Overview = styled.p`
 
 const Slider = styled.div`
   position: relative;
-  top: -100px;
+  top: -250px;
 `;
 
 const Row = styled(motion.div)`
@@ -50,6 +50,8 @@ const Row = styled(motion.div)`
   position: absolute;
   width: 100%;
   padding-bottom: 10px;
+  padding-left: 10px;
+  padding-right: 10px;
 `;
 
 const Box = styled(motion.div)<{ bgPhoto: string }>`
@@ -60,21 +62,40 @@ const Box = styled(motion.div)<{ bgPhoto: string }>`
   background-image: url(${(props) => props.bgPhoto});
   background-size: cover;
   background-position: center center;
+  &:first-child {
+    transform-origin: center left;
+  }
+  &:last-child {
+    transform-origin: center right;
+  }
 `;
 
 const rowVariants = {
   hidden: {
-    x: window.outerWidth + 5,
+    x: window.outerWidth - 5,
   },
   visible: {
     x: 0,
   },
   exit: {
-    x: -window.outerWidth - 5,
+    x: -window.outerWidth + 5,
   },
 };
 
 const offset = 6;
+
+const boxvariants = {
+  init: {
+    scale: 1,
+  },
+  hover: {
+    scale: 1.3,
+    y: -50,
+    transition: {
+      delay: 0.5,
+    },
+  },
+};
 
 function Home() {
   const { data, isLoading } = useQuery<IGetMoviesResult>({
@@ -125,6 +146,9 @@ function Home() {
                   .slice(offset * index, offset * index + offset)
                   .map((movie) => (
                     <Box
+                      variants={boxvariants}
+                      whileHover="hover"
+                      initial="init"
                       bgPhoto={makeImagePath(movie.backdrop_path, "w500")}
                       key={movie.id}
                     ></Box>

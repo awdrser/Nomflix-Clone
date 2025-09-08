@@ -111,7 +111,7 @@ const navVariants = {
 
 function Header() {
   const homeMatch = useRouteMatch({ path: "/", exact: true });
-  const tvMatch = useRouteMatch({ path: "/tv", exact: true });
+  const tvMatch = useRouteMatch({ path: "/tv", exact: false });
   const [searchOpen, setSearchOpen] = useState(false);
   const inputAnimation = useAnimation();
   const navAnimation = useAnimation();
