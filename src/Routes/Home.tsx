@@ -84,13 +84,35 @@ const rowVariants = {
 
 const offset = 6;
 
-const boxvariants = {
+const boxVariants = {
   init: {
     scale: 1,
   },
   hover: {
     scale: 1.3,
     y: -50,
+    transition: {
+      delay: 0.5,
+    },
+  },
+};
+
+const Info = styled(motion.div)`
+  padding: 10px;
+  bottom: 0;
+  position: absolute;
+  opacity: 0;
+  width: 100%;
+  background-color: ${(props) => props.theme.black.lighter};
+  h4 {
+    text-align: center;
+    font-size: 18px;
+  }
+`;
+
+const infoVariants = {
+  hover: {
+    opacity: 1,
     transition: {
       delay: 0.5,
     },
@@ -146,12 +168,16 @@ function Home() {
                   .slice(offset * index, offset * index + offset)
                   .map((movie) => (
                     <Box
-                      variants={boxvariants}
+                      variants={boxVariants}
                       whileHover="hover"
                       initial="init"
                       bgPhoto={makeImagePath(movie.backdrop_path, "w500")}
                       key={movie.id}
-                    ></Box>
+                    >
+                      <Info variants={infoVariants}>
+                        <h4>{movie.title}</h4>
+                      </Info>
+                    </Box>
                   ))}
               </Row>
             </AnimatePresence>
