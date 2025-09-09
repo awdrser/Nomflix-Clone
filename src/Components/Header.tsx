@@ -135,7 +135,6 @@ function Header() {
     });
   }, [scrollY, navAnimation]);
 
-  console.log(homeMatch, tvMatch);
   return (
     <Nav variants={navVariants} animate={navAnimation} initial={"top"}>
       <Col>

@@ -4,6 +4,7 @@ import { useState } from "react";
 import { styled } from "styled-components";
 import { getMovies, type IGetMoviesResult } from "../api";
 import { makeImagePath } from "../utils";
+import { useHistory, useRouteMatch } from "react-router-dom";
 
 const Wrapper = styled.div`
   background-color: black;
@@ -49,19 +50,16 @@ const Row = styled(motion.div)`
   grid-template-columns: repeat(6, 1fr);
   position: absolute;
   width: 100%;
-  padding-bottom: 10px;
-  padding-left: 10px;
-  padding-right: 10px;
 `;
 
 const Box = styled(motion.div)<{ bgPhoto: string }>`
   background-color: white;
-  height: 200px;
-  color: red;
-  font-size: 66px;
   background-image: url(${(props) => props.bgPhoto});
   background-size: cover;
   background-position: center center;
+  height: 200px;
+  font-size: 66px;
+  cursor: pointer;
   &:first-child {
     transform-origin: center left;
   }
@@ -72,13 +70,13 @@ const Box = styled(motion.div)<{ bgPhoto: string }>`
 
 const rowVariants = {
   hidden: {
-    x: window.outerWidth - 5,
+    x: window.outerWidth + 5,
   },
   visible: {
     x: 0,
   },
   exit: {
-    x: -window.outerWidth + 5,
+    x: -window.outerWidth - 5,
   },
 };
 
@@ -125,7 +123,16 @@ function Home() {
     queryFn: getMovies,
   });
 
-  console.log(data);
+  const history = useHistory();
+  const bigMovieMatch = useRouteMatch<{ movieId: string }>({
+    path: "/movies/:movieId",
+  });
+  console.log(bigMovieMatch);
+
+  const onBoxClicked = (movieId: number) => {
+    history.push(`/movies/${movieId}`);
+  };
+
   const [index, setIndex] = useState(0);
   const [leaving, setLeaving] = useState(false);
 
@@ -168,6 +175,8 @@ function Home() {
                   .slice(offset * index, offset * index + offset)
                   .map((movie) => (
                     <Box
+                      layoutId={movie.id.toString()}
+                      onClick={() => onBoxClicked(movie.id)}
                       variants={boxVariants}
                       whileHover="hover"
                       initial="init"
@@ -182,6 +191,23 @@ function Home() {
               </Row>
             </AnimatePresence>
           </Slider>
+          <AnimatePresence>
+            {bigMovieMatch ? (
+              <motion.div
+                layoutId={bigMovieMatch.params.movieId}
+                style={{
+                  position: "absolute",
+                  width: "40vw",
+                  height: "80vh",
+                  backgroundColor: "red",
+                  top: 50,
+                  left: 0,
+                  right: 0,
+                  margin: "0 auto",
+                }}
+              />
+            ) : null}
+          </AnimatePresence>
         </>
       )}
     </Wrapper>
