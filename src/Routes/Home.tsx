@@ -46,12 +46,12 @@ const Overview = styled.p`
   width: 50%;
 `;
 
-const Slider = styled.div`
+export const Slider = styled.div`
   position: relative;
   top: -100px;
 `;
 
-const Row = styled(motion.div)`
+export const Row = styled(motion.div)`
   display: grid;
   gap: 5px;
   grid-template-columns: repeat(6, 1fr);
@@ -61,7 +61,7 @@ const Row = styled(motion.div)`
   padding-right: 60px;
 `;
 
-const Box = styled(motion.div)<{ bgPhoto: string }>`
+export const Box = styled(motion.div)<{ bgPhoto: string }>`
   background-color: white;
   background-image: url(${(props) => props.bgPhoto});
   background-size: cover;
@@ -111,7 +111,7 @@ const boxVariants = {
   },
 };
 
-const Info = styled(motion.div)`
+export const Info = styled(motion.div)`
   padding: 10px;
   bottom: 0;
   position: absolute;
@@ -135,6 +135,7 @@ const BigMovie = styled(motion.div)`
   overflow: hidden;
   background-color: ${(props) => props.theme.black.lighter};
 `;
+
 const BigCover = styled.div`
   width: 100%;
   background-size: cover;
@@ -148,16 +149,38 @@ const BigTitle = styled.h3`
   font-size: 46px;
   position: relative;
   top: -80px;
+  font-weight: bold;
 `;
 
 const BigOverview = styled.p`
   padding: 20px;
   position: relative;
-  top: -80px;
+  max-width: 400px;
+  top: -120px;
   color: ${(props) => props.theme.white.lighter};
+  line-height: 30px;
+  font-weight: bolder;
 `;
 
-const PrevBtn = styled(motion.button)`
+const Genres = styled.p`
+  position: absolute;
+  display: flex;
+  right: 0;
+  margin-top: -95px;
+  padding-right: 20px;
+  font-size: 15px;
+  font-weight: bolder;
+`;
+
+const Label = styled.span`
+  font-weight: lighter;
+  font-size: 15px;
+  display: flex;
+  vertical-align: middle;
+  margin-right: 10px;
+`;
+
+export const PrevBtn = styled(motion.button)`
   position: absolute; // 부모 Slider 안에서 절대 위치 지정
   z-index: 10;
   height: 200px;
@@ -168,7 +191,7 @@ const PrevBtn = styled(motion.button)`
   font-size: 32px;
 `;
 
-const NextBtn = styled(motion.button)`
+export const NextBtn = styled(motion.button)`
   position: absolute; // 부모 Slider 안에서 절대 위치 지정
   z-index: 10;
   height: 200px;
@@ -185,8 +208,6 @@ const Category = styled.h2`
   margin-bottom: 10px;
   font-size: 32px;
 `;
-
-const Genres = styled.p``;
 
 const btnVariants = {
   hover: {
@@ -439,10 +460,16 @@ function Home() {
                         }}
                       />
                       <BigTitle>{clickedMovie.title}</BigTitle>
+                      {isLoadingDetail ? null : (
+                        <Genres>
+                          <Label>Genres :</Label>
+                          {dataDetail?.genres
+                            .map((genre) => genre.name)
+                            .join(", ")}
+                        </Genres>
+                      )}
+
                       <BigOverview>{clickedMovie.overview}</BigOverview>
-                      <Genres>
-                        {dataDetail?.genres.map((genre) => genre.name + ", ")}
-                      </Genres>
                     </>
                   )}
                 </BigMovie>
