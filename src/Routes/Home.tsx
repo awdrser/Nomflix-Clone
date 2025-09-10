@@ -4,8 +4,10 @@ import { useState } from "react";
 import { useHistory, useRouteMatch } from "react-router-dom";
 import { styled } from "styled-components";
 import {
+  getMovieDetails,
   getNowPlaying,
   getPopular,
+  type IGetDetailsResult,
   type IGetMoviesResult,
   type IGetNowPlayingResult,
 } from "../api";
@@ -80,16 +82,17 @@ const Overlay = styled(motion.div)`
   top: 0;
   width: 100%;
   height: 100%;
+  opacity: 0;
   background-color: rgba(0, 0, 0, 0.5);
 `;
 
 const rowVariants = {
   hidden: (isBack: boolean) => ({
-    x: isBack ? -window.outerWidth : window.outerWidth,
+    x: isBack ? -window.outerWidth - 5 : window.outerWidth + 5,
   }),
   visible: { x: 0 },
   exit: (isBack: boolean) => ({
-    x: isBack ? window.outerWidth : -window.outerWidth,
+    x: isBack ? window.outerWidth - 5 : -window.outerWidth + 5,
   }),
 };
 
@@ -129,7 +132,7 @@ const BigMovie = styled(motion.div)`
   right: 0;
   margin: 0 auto;
   border-radius: 15px;
-
+  overflow: hidden;
   background-color: ${(props) => props.theme.black.lighter};
 `;
 const BigCover = styled.div`
@@ -177,6 +180,14 @@ const NextBtn = styled(motion.button)`
   font-size: 32px;
 `;
 
+const Category = styled.h2`
+  margin-left: 60px;
+  margin-bottom: 10px;
+  font-size: 32px;
+`;
+
+const Genres = styled.p``;
+
 const btnVariants = {
   hover: {
     scale: 1.3,
@@ -197,17 +208,22 @@ function Home() {
   const [leaving, setLeaving] = useState(false);
   const history = useHistory();
   const { scrollY } = useScroll();
+
+  const [popularIndex, setPopularIndex] = useState(0);
+  const [popularLeaving, setPopularLeaving] = useState(false);
+  const [popularIsBack, setPopularIsBack] = useState(false);
+
   const { data: dataNow, isLoading } = useQuery<IGetNowPlayingResult>({
     queryKey: ["movies", "nowPlaying"],
     queryFn: getNowPlaying,
   });
-
-  const [isBack, setIsback] = useState(false);
   const { data: dataPopular, isLoading: isLoadingPopular } =
     useQuery<IGetMoviesResult>({
       queryKey: ["movies", "popular"],
       queryFn: getPopular,
     });
+
+  const [isBack, setIsback] = useState(false);
 
   console.log(dataPopular);
 
@@ -221,9 +237,24 @@ function Home() {
 
   const clickedMovie =
     bigMovieMatch?.isExact &&
-    dataNow?.results.find(
+    (dataNow?.results.find(
       (movie) => movie.id + "" === bigMovieMatch.params.movieId
-    );
+    ) ||
+      dataPopular?.results.find(
+        (movie) => movie.id + "" === bigMovieMatch.params.movieId
+      ));
+
+  const { data: dataDetail, isLoading: isLoadingDetail } =
+    useQuery<IGetDetailsResult>({
+      queryKey: ["movies", "detail"],
+      queryFn: () => {
+        if (clickedMovie) {
+          return getMovieDetails(clickedMovie.id);
+        }
+        return Promise.reject(new Error("No movie ID provided"));
+      },
+      enabled: !!clickedMovie,
+    });
 
   const increaseIndex = () => {
     if (dataNow) {
@@ -246,7 +277,31 @@ function Home() {
       setIndex((prev) => (prev === 0 ? maxPage : prev - 1));
     }
   };
+
+  const increasePopularIndex = () => {
+    if (dataPopular) {
+      setPopularIsBack(false);
+      if (popularLeaving) return;
+      setPopularLeaving(true);
+      const totalMovieLen = dataPopular.results.length - 1;
+      const maxPage = Math.floor(totalMovieLen / offset) - 1;
+      setPopularIndex((prev) => (prev === maxPage ? 0 : prev + 1));
+    }
+  };
+
+  const decreasePopularIndex = () => {
+    if (dataPopular) {
+      setPopularIsBack(true);
+      if (popularLeaving) return;
+      setPopularLeaving(true);
+      const totalMovieLen = dataPopular.results.length - 1;
+      const maxPage = Math.floor(totalMovieLen / offset) - 1;
+      setPopularIndex((prev) => (prev === 0 ? maxPage : prev - 1));
+    }
+  };
+
   const onOverlayClick = () => history.push("/");
+
   return (
     <Wrapper>
       {isLoading || isLoadingPopular ? (
@@ -260,6 +315,7 @@ function Home() {
             <Overview>{dataNow?.results[0].overview}</Overview>
           </Banner>
           <Slider>
+            <Category>Now Playing</Category>
             <AnimatePresence
               initial={false}
               onExitComplete={() => setLeaving(false)}
@@ -292,7 +348,7 @@ function Home() {
                       whileHover="hover"
                       initial="init"
                       bgPhoto={makeImagePath(movie.backdrop_path, "w500")}
-                      key={movie.id}
+                      key={`nowPlaying_${movie.id}`}
                     >
                       <Info variants={infoVariants}>
                         <h4>{movie.title}</h4>
@@ -302,6 +358,56 @@ function Home() {
               </Row>
               <NextBtn
                 onClick={increaseIndex}
+                variants={btnVariants}
+                whileHover="hover"
+              >
+                {">"}
+              </NextBtn>
+            </AnimatePresence>
+          </Slider>
+          <Slider style={{ marginTop: "300px" }}>
+            <Category>Popular</Category>
+            <AnimatePresence
+              initial={false}
+              onExitComplete={() => setPopularLeaving(false)}
+              custom={popularIsBack}
+            >
+              <PrevBtn
+                onClick={decreasePopularIndex}
+                variants={btnVariants}
+                whileHover="hover"
+              >
+                {"<"}
+              </PrevBtn>
+              <Row
+                custom={popularIsBack}
+                variants={rowVariants}
+                initial="hidden"
+                animate="visible"
+                exit="exit"
+                transition={{ type: "tween", duration: 1 }}
+                key={popularIndex + "popular"}
+              >
+                {dataPopular?.results
+                  .slice(offset * popularIndex, offset * popularIndex + offset)
+                  .map((movie) => (
+                    <Box
+                      layoutId={"popular_" + movie.id}
+                      onClick={() => onBoxClicked(movie.id)}
+                      variants={boxVariants}
+                      whileHover="hover"
+                      initial="init"
+                      bgPhoto={makeImagePath(movie.backdrop_path, "w500")}
+                      key={`popular_${movie.id}`}
+                    >
+                      <Info variants={infoVariants}>
+                        <h4>{movie.title}</h4>
+                      </Info>
+                    </Box>
+                  ))}
+              </Row>
+              <NextBtn
+                onClick={increasePopularIndex}
                 variants={btnVariants}
                 whileHover="hover"
               >
@@ -326,7 +432,7 @@ function Home() {
                     <>
                       <BigCover
                         style={{
-                          backgroundImage: `linear-gradient(to top, black, transparent), url(${makeImagePath(
+                          backgroundImage: `linear-gradient(to top, #2F2F2F, transparent), url(${makeImagePath(
                             clickedMovie.backdrop_path,
                             "w500"
                           )})`,
@@ -334,6 +440,9 @@ function Home() {
                       />
                       <BigTitle>{clickedMovie.title}</BigTitle>
                       <BigOverview>{clickedMovie.overview}</BigOverview>
+                      <Genres>
+                        {dataDetail?.genres.map((genre) => genre.name + ", ")}
+                      </Genres>
                     </>
                   )}
                 </BigMovie>

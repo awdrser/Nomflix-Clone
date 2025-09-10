@@ -8,7 +8,10 @@ interface IMoive {
   title: string;
   overview: string;
 }
-
+interface IGenres {
+  id: number;
+  name: string;
+}
 export interface IGetNowPlayingResult extends IGetMoviesResult {
   dates: { maximum: string; minimum: string };
 }
@@ -18,6 +21,16 @@ export interface IGetMoviesResult {
   results: IMoive[];
   total_pages: number;
   total_results: number;
+}
+export interface IGetDetailsResult {
+  genres: IGenres[];
+  release_date: string;
+  runtime: number;
+}
+export function getMovieDetails(movie_id: number) {
+  return fetch(`${BASE_PATH}/movie/${movie_id}?api_key=${API_KEY}`).then(
+    (response) => response.json()
+  );
 }
 
 export function getNowPlaying() {
