@@ -3,7 +3,12 @@ import { AnimatePresence, motion, useScroll } from "framer-motion";
 import { useState } from "react";
 import { useHistory, useRouteMatch } from "react-router-dom";
 import { styled } from "styled-components";
-import { getMovies, type IGetMoviesResult } from "../api";
+import {
+  getNowPlaying,
+  getPopular,
+  type IGetMoviesResult,
+  type IGetNowPlayingResult,
+} from "../api";
 import { makeImagePath } from "../utils";
 
 const Wrapper = styled.div`
@@ -41,7 +46,7 @@ const Overview = styled.p`
 
 const Slider = styled.div`
   position: relative;
-  top: -250px;
+  top: -100px;
 `;
 
 const Row = styled(motion.div)`
@@ -50,6 +55,8 @@ const Row = styled(motion.div)`
   grid-template-columns: repeat(6, 1fr);
   position: absolute;
   width: 100%;
+  padding-left: 60px;
+  padding-right: 60px;
 `;
 
 const Box = styled(motion.div)<{ bgPhoto: string }>`
@@ -77,15 +84,13 @@ const Overlay = styled(motion.div)`
 `;
 
 const rowVariants = {
-  hidden: {
-    x: window.outerWidth + 5,
-  },
-  visible: {
-    x: 0,
-  },
-  exit: {
-    x: -window.outerWidth - 5,
-  },
+  hidden: (isBack: boolean) => ({
+    x: isBack ? -window.outerWidth : window.outerWidth,
+  }),
+  visible: { x: 0 },
+  exit: (isBack: boolean) => ({
+    x: isBack ? window.outerWidth : -window.outerWidth,
+  }),
 };
 
 const offset = 6;
@@ -124,7 +129,7 @@ const BigMovie = styled(motion.div)`
   right: 0;
   margin: 0 auto;
   border-radius: 15px;
-  overflow: hidden;
+
   background-color: ${(props) => props.theme.black.lighter};
 `;
 const BigCover = styled.div`
@@ -149,6 +154,35 @@ const BigOverview = styled.p`
   color: ${(props) => props.theme.white.lighter};
 `;
 
+const PrevBtn = styled(motion.button)`
+  position: absolute; // 부모 Slider 안에서 절대 위치 지정
+  z-index: 10;
+  height: 200px;
+  width: 60px;
+  background-color: rgba(0, 0, 0, 0.3);
+  color: white;
+  border: 0;
+  font-size: 32px;
+`;
+
+const NextBtn = styled(motion.button)`
+  position: absolute; // 부모 Slider 안에서 절대 위치 지정
+  z-index: 10;
+  height: 200px;
+  width: 60px;
+  background-color: rgba(0, 0, 0, 0.3);
+  color: white;
+  border: 0;
+  right: 0;
+  font-size: 32px;
+`;
+
+const btnVariants = {
+  hover: {
+    scale: 1.3,
+  },
+};
+
 const infoVariants = {
   hover: {
     opacity: 1,
@@ -159,59 +193,87 @@ const infoVariants = {
 };
 
 function Home() {
-  const { data, isLoading } = useQuery<IGetMoviesResult>({
+  const [index, setIndex] = useState(0);
+  const [leaving, setLeaving] = useState(false);
+  const history = useHistory();
+  const { scrollY } = useScroll();
+  const { data: dataNow, isLoading } = useQuery<IGetNowPlayingResult>({
     queryKey: ["movies", "nowPlaying"],
-    queryFn: getMovies,
+    queryFn: getNowPlaying,
   });
 
-  const history = useHistory();
+  const [isBack, setIsback] = useState(false);
+  const { data: dataPopular, isLoading: isLoadingPopular } =
+    useQuery<IGetMoviesResult>({
+      queryKey: ["movies", "popular"],
+      queryFn: getPopular,
+    });
+
+  console.log(dataPopular);
 
   const bigMovieMatch = useRouteMatch<{ movieId: string }>({
     path: "/movies/:movieId",
   });
 
-  const { scrollY } = useScroll();
-
   const onBoxClicked = (movieId: number) => {
     history.push(`/movies/${movieId}`);
   };
 
-  const [index, setIndex] = useState(0);
-  const [leaving, setLeaving] = useState(false);
-
   const clickedMovie =
     bigMovieMatch?.isExact &&
-    data?.results.find(
+    dataNow?.results.find(
       (movie) => movie.id + "" === bigMovieMatch.params.movieId
     );
 
-  const incraseIndex = () => {
-    if (data) {
+  const increaseIndex = () => {
+    if (dataNow) {
+      setIsback(false);
       if (leaving) return;
-      toggleLeaving();
-      const totalMovieLen = data.results.length - 1;
+      setLeaving(true);
+      const totalMovieLen = dataNow.results.length - 1;
       const maxPage = Math.floor(totalMovieLen / offset) - 1;
       setIndex((prev) => (prev === maxPage ? 0 : prev + 1));
     }
   };
-  const toggleLeaving = () => setLeaving((prev) => !prev);
+
+  const decreaseIndex = () => {
+    if (dataNow) {
+      setIsback(true);
+      if (leaving) return;
+      setLeaving(true);
+      const totalMovieLen = dataNow.results.length - 1;
+      const maxPage = Math.floor(totalMovieLen / offset) - 1;
+      setIndex((prev) => (prev === 0 ? maxPage : prev - 1));
+    }
+  };
   const onOverlayClick = () => history.push("/");
   return (
     <Wrapper>
-      {isLoading ? (
+      {isLoading || isLoadingPopular ? (
         <Loader>Loading...</Loader>
       ) : (
         <>
           <Banner
-            onClick={incraseIndex}
-            bgPhoto={makeImagePath(data?.results[0].backdrop_path || "")}
+            bgPhoto={makeImagePath(dataNow?.results[0].backdrop_path || "")}
           >
-            <Title>{data?.results[0].title}</Title>
-            <Overview>{data?.results[0].overview}</Overview>
+            <Title>{dataNow?.results[0].title}</Title>
+            <Overview>{dataNow?.results[0].overview}</Overview>
           </Banner>
           <Slider>
-            <AnimatePresence initial={false} onExitComplete={toggleLeaving}>
+            <AnimatePresence
+              initial={false}
+              onExitComplete={() => setLeaving(false)}
+              custom={isBack}
+            >
+              <PrevBtn
+                onClick={decreaseIndex}
+                variants={btnVariants}
+                whileHover="hover"
+              >
+                {"<"}
+              </PrevBtn>
               <Row
+                custom={isBack}
                 variants={rowVariants}
                 initial="hidden"
                 animate="visible"
@@ -219,7 +281,7 @@ function Home() {
                 transition={{ type: "tween", duration: 1 }}
                 key={index}
               >
-                {data?.results
+                {dataNow?.results
                   .slice(1)
                   .slice(offset * index, offset * index + offset)
                   .map((movie) => (
@@ -238,8 +300,16 @@ function Home() {
                     </Box>
                   ))}
               </Row>
+              <NextBtn
+                onClick={increaseIndex}
+                variants={btnVariants}
+                whileHover="hover"
+              >
+                {">"}
+              </NextBtn>
             </AnimatePresence>
           </Slider>
+
           <AnimatePresence>
             {bigMovieMatch ? (
               <>

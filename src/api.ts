@@ -1,4 +1,4 @@
-const API_KEY = "10923b261ba94d897ac6b81148314a3f";
+const API_KEY = "d84e3334d7009c8df59202f762ce3017";
 const BASE_PATH = "https://api.themoviedb.org/3";
 
 interface IMoive {
@@ -9,16 +9,25 @@ interface IMoive {
   overview: string;
 }
 
-export interface IGetMoviesResult {
+export interface IGetNowPlayingResult extends IGetMoviesResult {
   dates: { maximum: string; minimum: string };
+}
+
+export interface IGetMoviesResult {
   page: number;
   results: IMoive[];
   total_pages: number;
   total_results: number;
 }
 
-export function getMovies() {
+export function getNowPlaying() {
   return fetch(`${BASE_PATH}/movie/now_playing?api_key=${API_KEY}`).then(
+    (response) => response.json()
+  );
+}
+
+export function getPopular() {
+  return fetch(`${BASE_PATH}/movie/popular?api_key=${API_KEY}`).then(
     (response) => response.json()
   );
 }
