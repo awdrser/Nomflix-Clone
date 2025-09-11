@@ -46,12 +46,12 @@ const Overview = styled.p`
   width: 50%;
 `;
 
-export const Slider = styled.div`
+const Slider = styled.div`
   position: relative;
   top: -100px;
 `;
 
-export const Row = styled(motion.div)`
+const Row = styled(motion.div)`
   display: grid;
   gap: 5px;
   grid-template-columns: repeat(6, 1fr);
@@ -61,7 +61,7 @@ export const Row = styled(motion.div)`
   padding-right: 60px;
 `;
 
-export const Box = styled(motion.div)<{ bgPhoto: string }>`
+const Box = styled(motion.div)<{ bgPhoto: string }>`
   background-color: white;
   background-image: url(${(props) => props.bgPhoto});
   background-size: cover;
@@ -181,7 +181,7 @@ const Label = styled.span`
 `;
 
 export const PrevBtn = styled(motion.button)`
-  position: absolute; // 부모 Slider 안에서 절대 위치 지정
+  position: absolute;
   z-index: 10;
   height: 200px;
   width: 60px;
@@ -192,7 +192,7 @@ export const PrevBtn = styled(motion.button)`
 `;
 
 export const NextBtn = styled(motion.button)`
-  position: absolute; // 부모 Slider 안에서 절대 위치 지정
+  position: absolute;
   z-index: 10;
   height: 200px;
   width: 60px;
@@ -232,7 +232,6 @@ function Home() {
 
   const [popularIndex, setPopularIndex] = useState(0);
   const [popularLeaving, setPopularLeaving] = useState(false);
-  const [popularIsBack, setPopularIsBack] = useState(false);
 
   const { data: dataNow, isLoading } = useQuery<IGetNowPlayingResult>({
     queryKey: ["movies", "nowPlaying"],
@@ -244,7 +243,7 @@ function Home() {
       queryFn: getPopular,
     });
 
-  const [isBack, setIsback] = useState(false);
+  const [isBack, setIsBack] = useState(false);
 
   console.log(dataPopular);
 
@@ -279,7 +278,7 @@ function Home() {
 
   const increaseIndex = () => {
     if (dataNow) {
-      setIsback(false);
+      setIsBack(false);
       if (leaving) return;
       setLeaving(true);
       const totalMovieLen = dataNow.results.length - 1;
@@ -290,7 +289,7 @@ function Home() {
 
   const decreaseIndex = () => {
     if (dataNow) {
-      setIsback(true);
+      setIsBack(true);
       if (leaving) return;
       setLeaving(true);
       const totalMovieLen = dataNow.results.length - 1;
@@ -301,7 +300,7 @@ function Home() {
 
   const increasePopularIndex = () => {
     if (dataPopular) {
-      setPopularIsBack(false);
+      setIsBack(false);
       if (popularLeaving) return;
       setPopularLeaving(true);
       const totalMovieLen = dataPopular.results.length - 1;
@@ -312,7 +311,7 @@ function Home() {
 
   const decreasePopularIndex = () => {
     if (dataPopular) {
-      setPopularIsBack(true);
+      setIsBack(true);
       if (popularLeaving) return;
       setPopularLeaving(true);
       const totalMovieLen = dataPopular.results.length - 1;
@@ -390,8 +389,8 @@ function Home() {
             <Category>Popular</Category>
             <AnimatePresence
               initial={false}
-              onExitComplete={() => setPopularLeaving(false)}
-              custom={popularIsBack}
+              onExitComplete={() => setLeaving(false)}
+              custom={isBack}
             >
               <PrevBtn
                 onClick={decreasePopularIndex}
@@ -401,7 +400,7 @@ function Home() {
                 {"<"}
               </PrevBtn>
               <Row
-                custom={popularIsBack}
+                custom={isBack}
                 variants={rowVariants}
                 initial="hidden"
                 animate="visible"
