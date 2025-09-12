@@ -12,6 +12,8 @@ import {
 } from "../api";
 import { makeImagePath } from "../utils";
 import SliderComponent from "../Components/Slider";
+import { useSetAtom } from "jotai";
+import { isHomeAtom } from "../Atoms";
 
 const Wrapper = styled.div`
   background-color: rgb(30, 30, 30);
@@ -118,6 +120,8 @@ const Label = styled.span`
 function Series() {
   const history = useHistory();
   const { scrollY } = useScroll();
+  const setIsHome = useSetAtom(isHomeAtom);
+  setIsHome(false);
 
   const { data: dataOnTheAir, isLoading } = useQuery<IGetSeriesResult>({
     queryKey: ["tv", "onTheAir"],

@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { AnimatePresence, motion, useScroll } from "framer-motion";
-import { useState } from "react";
+import { useSetAtom } from "jotai";
+import { isHomeAtom } from "../Atoms";
 import { useHistory, useRouteMatch } from "react-router-dom";
 import { styled } from "styled-components";
 import {
@@ -120,6 +121,9 @@ const Label = styled.span`
 function Home() {
   const history = useHistory();
   const { scrollY } = useScroll();
+  const setIsHome = useSetAtom(isHomeAtom);
+
+  setIsHome(true);
 
   const { data: dataNow, isLoading } = useQuery<IGetNowPlayingResult>({
     queryKey: ["movies", "nowPlaying"],

@@ -1,8 +1,10 @@
 import { motion, useAnimation, useScroll } from "framer-motion";
+import { useAtomValue } from "jotai";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Link, useHistory, useRouteMatch } from "react-router-dom";
 import styled from "styled-components";
+import { isHomeAtom } from "../Atoms";
 
 interface IForm {
   keyword: string;
@@ -118,12 +120,24 @@ const navVariants = {
 function Header() {
   const homeMatch = useRouteMatch({ path: "/", exact: true });
   const tvMatch = useRouteMatch({ path: "/series", exact: false });
+  const isHome = useAtomValue(isHomeAtom);
   const [searchOpen, setSearchOpen] = useState(false);
   const inputAnimation = useAnimation();
   const navAnimation = useAnimation();
   const { scrollY } = useScroll();
   const history = useHistory();
-  const { register, handleSubmit } = useForm<IForm>();
+  const { register, handleSubmit, watch } = useForm<IForm>();
+
+  const keyword = watch("keyword");
+
+  useEffect(() => {
+    if (keyword && keyword.length > 1) {
+      history.push(`/search?keyword=${keyword}`);
+    } else {
+      isHome ? history.push(`/`) : history.push(`/series`);
+    }
+  }, [keyword, history]);
+
   const onValid = (data: IForm) => {
     history.push(`/search?keyword=${data.keyword}`);
   };

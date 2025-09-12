@@ -24,6 +24,8 @@ const Box = styled(motion.div)<{ bgPhoto: string }>`
   height: 200px;
   font-size: 66px;
   cursor: pointer;
+  border-radius: 5px;
+
   &:first-child {
     transform-origin: center left;
   }
@@ -44,6 +46,7 @@ const Info = styled(motion.div)`
   position: absolute;
   opacity: 0;
   width: 100%;
+  border-radius: 5px;
   background-color: ${(props) => props.theme.black.lighter};
   h4 {
     text-align: center;
