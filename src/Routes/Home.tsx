@@ -7,6 +7,7 @@ import {
   getMovieDetails,
   getNowPlaying,
   getPopular,
+  getUpcoming,
   type IGetDetailsResult,
   type IGetMoviesResult,
   type IGetNowPlayingResult,
@@ -15,7 +16,7 @@ import { makeImagePath } from "../utils";
 import SliderComponent from "../Components/Slider";
 
 const Wrapper = styled.div`
-  background-color: black;
+  background-color: rgb(30, 30, 30);
 `;
 
 const Loader = styled.div`
@@ -32,7 +33,7 @@ const Banner = styled.div<{ bgPhoto: string }>`
   justify-content: center;
   padding: 60px;
   background-image:
-    linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 1)),
+    linear-gradient(rgba(0, 0, 0, 0), rgba(30, 30, 30, 1)),
     url(${(props) => props.bgPhoto});
   background-size: cover;
 `;
@@ -59,13 +60,15 @@ const Overlay = styled(motion.div)`
 const BigMovie = styled(motion.div)`
   position: absolute;
   width: 40vw;
-  height: 80vh;
   left: 0;
   right: 0;
   margin: 0 auto;
   border-radius: 15px;
   overflow: hidden;
   background-color: ${(props) => props.theme.black.lighter};
+  height: auto;
+  margin-bottom: 0;
+  padding-bottom: 0;
 `;
 
 const BigCover = styled.div`
@@ -92,6 +95,7 @@ const BigOverview = styled.p`
   color: ${(props) => props.theme.white.lighter};
   line-height: 30px;
   font-weight: bolder;
+  margin-bottom: -120px;
 `;
 
 const Genres = styled.p`
@@ -126,6 +130,11 @@ function Home() {
       queryKey: ["movies", "popular"],
       queryFn: getPopular,
     });
+  const { data: dataUpcoming, isLoading: isLoadingUpcoming } =
+    useQuery<IGetNowPlayingResult>({
+      queryKey: ["movies", "upcoming"],
+      queryFn: getUpcoming,
+    });
 
   console.log(dataPopular);
 
@@ -139,6 +148,9 @@ function Home() {
       (movie) => movie.id + "" === bigMovieMatch.params.movieId
     ) ||
       dataPopular?.results.find(
+        (movie) => movie.id + "" === bigMovieMatch.params.movieId
+      ) ||
+      dataUpcoming?.results.find(
         (movie) => movie.id + "" === bigMovieMatch.params.movieId
       ));
 
@@ -158,7 +170,7 @@ function Home() {
 
   return (
     <Wrapper>
-      {isLoading || isLoadingPopular ? (
+      {isLoading || isLoadingPopular || isLoadingUpcoming ? (
         <Loader>Loading...</Loader>
       ) : (
         <>
@@ -178,6 +190,13 @@ function Home() {
             data={dataPopular}
             title="Popular"
             keyPrefix="popular__"
+          />
+
+          <SliderComponent
+            style={{ marginTop: "300px" }}
+            data={dataUpcoming}
+            title="Upcoming"
+            keyPrefix="upcoming__"
           />
 
           <AnimatePresence>

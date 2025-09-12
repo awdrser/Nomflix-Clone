@@ -18,6 +18,7 @@ const Nav = styled(motion.nav)`
   font-size: 14px;
   padding: 20px 60px;
   color: white;
+  z-index: 100; // 스크롤 중 슬라이더와 겹치면 안 보이는 오류 수정
 `;
 
 const Col = styled.div`
@@ -161,10 +162,20 @@ function Header() {
         </Logo>
         <Items>
           <Item>
-            <Link to="/">Home {homeMatch?.isExact && <Circle />}</Link>
+            <Link to="/">
+              Home{" "}
+              {homeMatch?.isExact && (
+                <Circle layoutId="circle" style={{ originY: "0px" }} /> // 스크롤 후 변경할 때 애니메이션 오류 방지
+              )}
+            </Link>
           </Item>
           <Item>
-            <Link to="/tv">Tv Shows {tvMatch && <Circle />}</Link>
+            <Link to="/tv">
+              Tv Shows{" "}
+              {tvMatch && (
+                <Circle layoutId="circle" style={{ originY: "0px" }} />
+              )}
+            </Link>
           </Item>
         </Items>
       </Col>
