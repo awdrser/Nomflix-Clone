@@ -3,10 +3,14 @@ import { AnimatePresence, motion } from "framer-motion";
 import { makeImagePath } from "../utils";
 import { useHistory } from "react-router-dom";
 import { useState } from "react";
-import type { IGetMoviesResult, IGetNowPlayingResult } from "../api";
+import type {
+  IGetMoviesResult,
+  IGetNowPlayingResult,
+  IGetSeriesResult,
+} from "../api";
 
 interface ISliderProps {
-  data: IGetMoviesResult | IGetNowPlayingResult | undefined;
+  data: IGetMoviesResult | IGetNowPlayingResult | IGetSeriesResult | undefined;
   title: string;
   style?: React.CSSProperties;
   keyPrefix: string;
@@ -125,8 +129,13 @@ const rowVariants = {
 
 function SliderComponent({ data, title, keyPrefix }: ISliderProps) {
   const history = useHistory();
-  const onBoxClicked = (movieId: number) => {
-    history.push(`/movies/${movieId}`);
+  const onBoxClicked = (id: number) => {
+    if (!data) return null;
+    if ("title" in data.results[0]) {
+      history.push(`/movies/${id}`);
+    } else if ("name" in data.results[0]) {
+      history.push(`/series/${id}`);
+    }
   };
   const [isBack, setIsBack] = useState(false);
   const [leaving, setLeaving] = useState(false);
@@ -138,8 +147,8 @@ function SliderComponent({ data, title, keyPrefix }: ISliderProps) {
       setIsBack(false);
       if (leaving) return;
       setLeaving(true);
-      const totalMovieLen = data.results.length - 1;
-      const maxPage = Math.floor(totalMovieLen / offset) - 1;
+      const totalDataLen = data.results.length - 1;
+      const maxPage = Math.floor(totalDataLen / offset) - 1;
       setIndex((prev) => (prev === maxPage ? 0 : prev + 1));
     }
   };
@@ -149,8 +158,8 @@ function SliderComponent({ data, title, keyPrefix }: ISliderProps) {
       setIsBack(true);
       if (leaving) return;
       setLeaving(true);
-      const totalMovieLen = data.results.length - 1;
-      const maxPage = Math.floor(totalMovieLen / offset) - 1;
+      const totalDataLen = data.results.length - 1;
+      const maxPage = Math.floor(totalDataLen / offset) - 1;
       setIndex((prev) => (prev === 0 ? maxPage : prev - 1));
     }
   };
@@ -182,18 +191,18 @@ function SliderComponent({ data, title, keyPrefix }: ISliderProps) {
           >
             {data?.results
               .slice(offset * index, offset * index + offset)
-              .map((movie) => (
+              .map((one) => (
                 <Box
-                  layoutId={keyPrefix + movie.id}
-                  onClick={() => onBoxClicked(movie.id)}
+                  layoutId={keyPrefix + one.id}
+                  onClick={() => onBoxClicked(one.id)}
                   variants={boxVariants}
                   whileHover="hover"
                   initial="init"
-                  bgPhoto={makeImagePath(movie.backdrop_path, "w500")}
-                  key={keyPrefix + movie.id}
+                  bgPhoto={makeImagePath(one.backdrop_path, "w500")}
+                  key={keyPrefix + one.id}
                 >
                   <Info variants={infoVariants}>
-                    <h4>{movie.title}</h4>
+                    <h4>{"title" in one ? one.title : one.name}</h4>
                   </Info>
                 </Box>
               ))}

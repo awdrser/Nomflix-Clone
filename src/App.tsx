@@ -2,14 +2,14 @@ import { Route, BrowserRouter as Router, Switch } from "react-router-dom";
 import Header from "./Components/Header";
 import Home from "./Routes/Home";
 import Search from "./Routes/Search";
-import Tv from "./Routes/Tv";
+import Series from "./Routes/Series";
 
 function App() {
   return (
     <Router>
       <Header />
       <Switch>
-        <Route path="/tv" component={Tv} />
+        <Route path="/series" component={Series} />
         <Route path="/search" component={Search} />
         <Route path="/movies/:movieId" exact component={Home} />
         <Route path="/" exact component={Home} />

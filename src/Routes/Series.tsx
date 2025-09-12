@@ -1,16 +1,14 @@
 import { useQuery } from "@tanstack/react-query";
 import { AnimatePresence, motion, useScroll } from "framer-motion";
-import { useState } from "react";
 import { useHistory, useRouteMatch } from "react-router-dom";
 import { styled } from "styled-components";
 import {
-  getMovieDetails,
-  getNowPlayingMovies,
-  getPopularMovies,
-  getUpcomingMovies,
-  type IGetMovieDetailsResult,
-  type IGetMoviesResult,
-  type IGetNowPlayingResult,
+  getTopRated,
+  getOnTheAir,
+  getPopularSeries,
+  getSeriesDetails,
+  type IGetSeriesResult,
+  type IGetSeriesDetailsResult,
 } from "../api";
 import { makeImagePath } from "../utils";
 import SliderComponent from "../Components/Slider";
@@ -117,90 +115,90 @@ const Label = styled.span`
   margin-right: 10px;
 `;
 
-function Home() {
+function Series() {
   const history = useHistory();
   const { scrollY } = useScroll();
 
-  const { data: dataNow, isLoading } = useQuery<IGetNowPlayingResult>({
-    queryKey: ["movies", "nowPlaying"],
-    queryFn: getNowPlayingMovies,
+  const { data: dataOnTheAir, isLoading } = useQuery<IGetSeriesResult>({
+    queryKey: ["tv", "onTheAir"],
+    queryFn: getOnTheAir,
   });
   const { data: dataPopular, isLoading: isLoadingPopular } =
-    useQuery<IGetMoviesResult>({
-      queryKey: ["movies", "popular"],
-      queryFn: getPopularMovies,
+    useQuery<IGetSeriesResult>({
+      queryKey: ["tv", "popular"],
+      queryFn: getPopularSeries,
     });
-  const { data: dataUpcoming, isLoading: isLoadingUpcoming } =
-    useQuery<IGetNowPlayingResult>({
-      queryKey: ["movies", "upcoming"],
-      queryFn: getUpcomingMovies,
+  const { data: dataTopRated, isLoading: isLoadingTopRated } =
+    useQuery<IGetSeriesResult>({
+      queryKey: ["tv", "topRated"],
+      queryFn: getTopRated,
     });
 
-  console.log(dataPopular);
-
-  const bigMovieMatch = useRouteMatch<{ movieId: string }>({
-    path: "/movies/:movieId",
+  const bigSeriesMatch = useRouteMatch<{ id: string }>({
+    path: "/series/:id",
   });
 
-  const clickedMovie =
-    bigMovieMatch?.isExact &&
-    (dataNow?.results.find(
-      (movie) => movie.id + "" === bigMovieMatch.params.movieId
+  const clickedSeries =
+    bigSeriesMatch?.isExact &&
+    (dataOnTheAir?.results.find(
+      (series) => series.id + "" === bigSeriesMatch.params.id
     ) ||
       dataPopular?.results.find(
-        (movie) => movie.id + "" === bigMovieMatch.params.movieId
+        (series) => series.id + "" === bigSeriesMatch.params.id
       ) ||
-      dataUpcoming?.results.find(
-        (movie) => movie.id + "" === bigMovieMatch.params.movieId
+      dataTopRated?.results.find(
+        (series) => series.id + "" === bigSeriesMatch.params.id
       ));
 
   const { data: dataDetail, isLoading: isLoadingDetail } =
-    useQuery<IGetMovieDetailsResult>({
-      queryKey: ["movies", "detail"],
+    useQuery<IGetSeriesDetailsResult>({
+      queryKey: ["series", "detail"],
       queryFn: () => {
-        if (clickedMovie) {
-          return getMovieDetails(clickedMovie.id);
+        if (clickedSeries) {
+          return getSeriesDetails(clickedSeries.id);
         }
-        return Promise.reject(new Error("No movie ID provided"));
+        return Promise.reject(new Error("No Series ID provided"));
       },
-      enabled: !!clickedMovie,
+      enabled: !!clickedSeries,
     });
 
-  const onOverlayClick = () => history.push("/");
+  const onOverlayClick = () => history.push("/series");
 
   return (
     <Wrapper>
-      {isLoading || isLoadingPopular || isLoadingUpcoming ? (
+      {isLoading || isLoadingPopular || isLoadingTopRated ? (
         <Loader>Loading...</Loader>
       ) : (
         <>
           <Banner
-            bgPhoto={makeImagePath(dataNow?.results[0].backdrop_path || "")}
+            bgPhoto={makeImagePath(
+              dataOnTheAir?.results[0].backdrop_path || ""
+            )}
           >
-            <Title>{dataNow?.results[0].title}</Title>
-            <Overview>{dataNow?.results[0].overview}</Overview>
+            <Title>{dataOnTheAir?.results[0].name}</Title>
+            <Overview>{dataOnTheAir?.results[0].overview}</Overview>
           </Banner>
           <SliderComponent
-            data={dataNow}
-            title="Now Playing"
-            keyPrefix="now_"
+            data={dataOnTheAir}
+            title="On The Air"
+            keyPrefix="series__onTheAir_"
           />
           <SliderComponent
             style={{ marginTop: "300px" }}
             data={dataPopular}
             title="Popular"
-            keyPrefix="popular__"
+            keyPrefix="series__popular__"
           />
 
           <SliderComponent
             style={{ marginTop: "300px" }}
-            data={dataUpcoming}
-            title="Upcoming"
-            keyPrefix="upcoming__"
+            data={dataTopRated}
+            title="Top Rated"
+            keyPrefix="series__topRated__"
           />
 
           <AnimatePresence>
-            {bigMovieMatch ? (
+            {bigSeriesMatch ? (
               <>
                 <Overlay
                   onClick={onOverlayClick}
@@ -208,20 +206,20 @@ function Home() {
                   animate={{ opacity: 1 }}
                 />
                 <BigMovie
-                  layoutId={bigMovieMatch.params.movieId}
-                  style={{ top: scrollY.get() + 100 }}
+                  layoutId={bigSeriesMatch.params.id}
+                  style={{ top: scrollY.get() + 80 }}
                 >
-                  {clickedMovie && (
+                  {clickedSeries && (
                     <>
                       <BigCover
                         style={{
                           backgroundImage: `linear-gradient(to top, #2F2F2F, transparent), url(${makeImagePath(
-                            clickedMovie.backdrop_path,
+                            clickedSeries.backdrop_path,
                             "w500"
                           )})`,
                         }}
                       />
-                      <BigTitle>{clickedMovie.title}</BigTitle>
+                      <BigTitle>{clickedSeries.name}</BigTitle>
                       {isLoadingDetail ? null : (
                         <Genres>
                           <Label>Genres:</Label>
@@ -231,7 +229,7 @@ function Home() {
                         </Genres>
                       )}
 
-                      <BigOverview>{clickedMovie.overview}</BigOverview>
+                      <BigOverview>{clickedSeries.overview}</BigOverview>
                     </>
                   )}
                 </BigMovie>
@@ -243,4 +241,5 @@ function Home() {
     </Wrapper>
   );
 }
-export default Home;
+
+export default Series;

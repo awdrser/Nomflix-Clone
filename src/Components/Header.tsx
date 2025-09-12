@@ -117,7 +117,7 @@ const navVariants = {
 
 function Header() {
   const homeMatch = useRouteMatch({ path: "/", exact: true });
-  const tvMatch = useRouteMatch({ path: "/tv", exact: false });
+  const tvMatch = useRouteMatch({ path: "/series", exact: false });
   const [searchOpen, setSearchOpen] = useState(false);
   const inputAnimation = useAnimation();
   const navAnimation = useAnimation();
@@ -170,7 +170,7 @@ function Header() {
             </Link>
           </Item>
           <Item>
-            <Link to="/tv">
+            <Link to="/series">
               Tv Shows{" "}
               {tvMatch && (
                 <Circle layoutId="circle" style={{ originY: "0px" }} />

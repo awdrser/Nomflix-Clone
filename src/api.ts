@@ -8,6 +8,13 @@ interface IMovie {
   title: string;
   overview: string;
 }
+interface ISeries {
+  name: string;
+  id: number;
+  overview: string;
+  backdrop_path: string;
+}
+
 interface IGenres {
   id: number;
   name: string;
@@ -22,7 +29,21 @@ export interface IGetMoviesResult {
   total_pages: number;
   total_results: number;
 }
-export interface IGetDetailsResult {
+
+export interface IGetSeriesResult {
+  page: number;
+  results: ISeries[];
+  total_pages: number;
+  total_results: number;
+}
+
+export interface IGetMovieDetailsResult {
+  genres: IGenres[];
+  release_date: string;
+  runtime: number;
+}
+
+export interface IGetSeriesDetailsResult {
   genres: IGenres[];
   release_date: string;
   runtime: number;
@@ -33,20 +54,44 @@ export function getMovieDetails(movie_id: number) {
   );
 }
 
-export function getNowPlaying() {
+export function getSeriesDetails(series_id: number) {
+  return fetch(`${BASE_PATH}/tv/${series_id}?api_key=${API_KEY}`).then(
+    (response) => response.json()
+  );
+}
+
+export function getNowPlayingMovies() {
   return fetch(`${BASE_PATH}/movie/now_playing?api_key=${API_KEY}`).then(
     (response) => response.json()
   );
 }
 
-export function getPopular() {
+export function getPopularMovies() {
   return fetch(`${BASE_PATH}/movie/popular?api_key=${API_KEY}`).then(
     (response) => response.json()
   );
 }
 
-export function getUpcoming() {
+export function getUpcomingMovies() {
   return fetch(`${BASE_PATH}/movie/upcoming?api_key=${API_KEY}`).then(
+    (response) => response.json()
+  );
+}
+
+export function getOnTheAir() {
+  return fetch(`${BASE_PATH}/tv/on_the_air?api_key=${API_KEY}`).then(
+    (response) => response.json()
+  );
+}
+
+export function getPopularSeries() {
+  return fetch(`${BASE_PATH}/tv/popular?api_key=${API_KEY}`).then((response) =>
+    response.json()
+  );
+}
+
+export function getTopRated() {
+  return fetch(`${BASE_PATH}/tv/top_rated?api_key=${API_KEY}`).then(
     (response) => response.json()
   );
 }
