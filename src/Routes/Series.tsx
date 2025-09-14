@@ -14,108 +14,8 @@ import { makeImagePath } from "../utils";
 import SliderComponent from "../Components/Slider";
 import { useSetAtom } from "jotai";
 import { isHomeAtom } from "../Atoms";
-
-const Wrapper = styled.div`
-  background-color: rgb(30, 30, 30);
-`;
-
-const Loader = styled.div`
-  height: 20vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-`;
-
-const Banner = styled.div<{ bgPhoto: string }>`
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  padding: 60px;
-  background-image:
-    linear-gradient(rgba(0, 0, 0, 0), rgba(30, 30, 30, 1)),
-    url(${(props) => props.bgPhoto});
-  background-size: cover;
-`;
-
-const Title = styled.h2`
-  font-size: 68px;
-  margin-bottom: 20px;
-`;
-
-const Overview = styled.p`
-  font-size: 30px;
-  width: 50%;
-`;
-
-const Overlay = styled(motion.div)`
-  position: fixed;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  opacity: 0;
-  background-color: rgba(0, 0, 0, 0.5);
-`;
-
-const BigMovie = styled(motion.div)`
-  position: absolute;
-  width: 40vw;
-  left: 0;
-  right: 0;
-  margin: 0 auto;
-  border-radius: 15px;
-  overflow: hidden;
-  background-color: ${(props) => props.theme.black.lighter};
-  height: auto;
-  margin-bottom: 0;
-  padding-bottom: 0;
-`;
-
-const BigCover = styled.div`
-  width: 100%;
-  background-size: cover;
-  background-position: center center;
-  height: 400px;
-`;
-
-const BigTitle = styled.h3`
-  color: ${(props) => props.theme.white.lighter};
-  padding: 20px;
-  font-size: 46px;
-  position: relative;
-  top: -80px;
-  font-weight: bold;
-`;
-
-const BigOverview = styled.p`
-  padding: 20px;
-  position: relative;
-  max-width: 50vh;
-  top: -120px;
-  color: ${(props) => props.theme.white.lighter};
-  line-height: 30px;
-  font-weight: bolder;
-  margin-bottom: -120px;
-`;
-
-const Genres = styled.p`
-  position: absolute;
-  display: flex;
-  right: 0;
-  max-width: 40vh;
-  margin-top: -95px;
-  padding-right: 20px;
-  font-size: 15px;
-  font-weight: bolder;
-`;
-
-const Label = styled.span`
-  font-weight: lighter;
-  font-size: 15px;
-  display: flex;
-  vertical-align: middle;
-  margin-right: 10px;
-`;
+import Detail from "../Components/Detail";
+import { Banner, Loader, Overview, Title, Wrapper } from "../styled.d";
 
 function Series() {
   const history = useHistory();
@@ -154,20 +54,6 @@ function Series() {
         (series) => series.id + "" === bigSeriesMatch.params.id
       ));
 
-  const { data: dataDetail, isLoading: isLoadingDetail } =
-    useQuery<IGetSeriesDetailsResult>({
-      queryKey: ["series", "detail"],
-      queryFn: () => {
-        if (clickedSeries) {
-          return getSeriesDetails(clickedSeries.id);
-        }
-        return Promise.reject(new Error("No Series ID provided"));
-      },
-      enabled: !!clickedSeries,
-    });
-
-  const onOverlayClick = () => history.push("/series");
-
   return (
     <Wrapper>
       {isLoading || isLoadingPopular || isLoadingTopRated ? (
@@ -201,45 +87,7 @@ function Series() {
             keyPrefix="series__topRated__"
           />
 
-          <AnimatePresence>
-            {bigSeriesMatch ? (
-              <>
-                <Overlay
-                  onClick={onOverlayClick}
-                  exit={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                />
-                <BigMovie
-                  layoutId={bigSeriesMatch.params.id}
-                  style={{ top: scrollY.get() + 80 }}
-                >
-                  {clickedSeries && (
-                    <>
-                      <BigCover
-                        style={{
-                          backgroundImage: `linear-gradient(to top, #2F2F2F, transparent), url(${makeImagePath(
-                            clickedSeries.backdrop_path,
-                            "w500"
-                          )})`,
-                        }}
-                      />
-                      <BigTitle>{clickedSeries.name}</BigTitle>
-                      {isLoadingDetail ? null : (
-                        <Genres>
-                          <Label>Genres:</Label>
-                          {dataDetail?.genres
-                            .map((genre) => genre.name)
-                            .join(", ")}
-                        </Genres>
-                      )}
-
-                      <BigOverview>{clickedSeries.overview}</BigOverview>
-                    </>
-                  )}
-                </BigMovie>
-              </>
-            ) : null}
-          </AnimatePresence>
+          <Detail data={clickedSeries}></Detail>
         </>
       )}
     </Wrapper>

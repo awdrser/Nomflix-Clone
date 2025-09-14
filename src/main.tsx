@@ -69,6 +69,12 @@ a {
   text-decoration:none;
   color:inherit;
 }
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
 `;
 
 const client = new QueryClient();

@@ -8,6 +8,8 @@ import type {
   IGetNowPlayingResult,
   IGetSeriesResult,
 } from "../api";
+import { clickedItemAtom } from "../Atoms";
+import { useAtom } from "jotai";
 
 interface ISliderProps {
   data: IGetMoviesResult | IGetNowPlayingResult | IGetSeriesResult | undefined;
@@ -21,7 +23,7 @@ const Box = styled(motion.div)<{ bgPhoto: string }>`
   background-image: url(${(props) => props.bgPhoto});
   background-size: cover;
   background-position: center center;
-  height: 200px;
+  height: 150px;
   font-size: 66px;
   cursor: pointer;
   border-radius: 5px;
@@ -37,13 +39,14 @@ const Box = styled(motion.div)<{ bgPhoto: string }>`
 const Category = styled.h2`
   margin-left: 60px;
   margin-bottom: 10px;
-  font-size: 32px;
+  font-size: 2vw;
+  font-weight: bolder;
 `;
 
 const Info = styled(motion.div)`
   padding: 10px;
   bottom: 0;
-  position: absolute;
+  position: fixed; // 화면 넓이 문제 수정
   opacity: 0;
   width: 100%;
   border-radius: 5px;
@@ -57,9 +60,9 @@ const Info = styled(motion.div)`
 const NextBtn = styled(motion.button)`
   position: absolute;
   z-index: 10;
-  height: 200px;
+  height: 150px;
   width: 60px;
-  background-color: rgba(0, 0, 0, 0.3);
+  background-color: rgba(0, 0, 0, 0);
   color: white;
   border: 0;
   right: 0;
@@ -69,9 +72,9 @@ const NextBtn = styled(motion.button)`
 const PrevBtn = styled(motion.button)`
   position: absolute;
   z-index: 10;
-  height: 200px;
+  height: 150px;
   width: 60px;
-  background-color: rgba(0, 0, 0, 0.3);
+  background-color: rgba(0, 0, 0, 0);
   color: white;
   border: 0;
   font-size: 32px;
@@ -85,6 +88,7 @@ const Row = styled(motion.div)`
   width: 100%;
   padding-left: 60px;
   padding-right: 60px;
+  overflow: visible;
 `;
 
 const Slider = styled.div`
@@ -94,6 +98,7 @@ const Slider = styled.div`
 
 const btnVariants = {
   hover: {
+    backgroundColor: "rgba(0, 0, 0, 0.3)",
     scale: 1.3,
   },
 };
@@ -105,6 +110,7 @@ const boxVariants = {
   hover: {
     scale: 1.3,
     y: -50,
+    zIndex: 100,
     transition: {
       delay: 0.5,
     },
@@ -134,6 +140,7 @@ function SliderComponent({ data, title, keyPrefix }: ISliderProps) {
   const history = useHistory();
   const onBoxClicked = (id: number) => {
     if (!data) return null;
+    setClickedItem({ sliderType: keyPrefix, id });
     if ("title" in data.results[0]) {
       history.push(`/movies/${id}`);
     } else if ("name" in data.results[0]) {
@@ -144,6 +151,7 @@ function SliderComponent({ data, title, keyPrefix }: ISliderProps) {
   const [leaving, setLeaving] = useState(false);
   const [index, setIndex] = useState(0);
   const offset = 6;
+  const [clickedItem, setClickedItem] = useAtom(clickedItemAtom);
 
   const increaseIndex = () => {
     if (data) {
@@ -176,13 +184,15 @@ function SliderComponent({ data, title, keyPrefix }: ISliderProps) {
           onExitComplete={() => setLeaving(false)}
           custom={isBack}
         >
-          <PrevBtn
-            onClick={decreaseIndex}
-            variants={btnVariants}
-            whileHover="hover"
-          >
-            {"<"}
-          </PrevBtn>
+          {
+            <PrevBtn
+              onClick={decreaseIndex}
+              variants={btnVariants}
+              whileHover="hover"
+            >
+              {"<"}
+            </PrevBtn>
+          }
           <Row
             custom={isBack}
             variants={rowVariants}
