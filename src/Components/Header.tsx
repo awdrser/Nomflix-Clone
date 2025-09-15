@@ -131,7 +131,7 @@ function Header() {
   const keyword = watch("keyword");
 
   useEffect(() => {
-    if (keyword && keyword.length > 1) {
+    if (keyword && keyword.length > 0) {
       history.push(`/search?keyword=${keyword}`);
     } else {
       isHome ? history.push(`/`) : history.push(`/series`);

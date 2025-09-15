@@ -1,60 +1,29 @@
-import { styled } from "styled-components";
 import { AnimatePresence, motion } from "framer-motion";
-import { makeImagePath } from "../utils";
-import { useHistory } from "react-router-dom";
+import { useSetAtom } from "jotai";
 import { useState } from "react";
+import { useHistory } from "react-router-dom";
+import { styled } from "styled-components";
 import type {
   IGetMoviesResult,
   IGetNowPlayingResult,
   IGetSeriesResult,
 } from "../api";
 import { clickedItemAtom } from "../Atoms";
-import { useAtom } from "jotai";
+import { Box, Info, Row } from "../styled.d";
+import { makeImagePath } from "../utils";
 
 interface ISliderProps {
   data: IGetMoviesResult | IGetNowPlayingResult | IGetSeriesResult | undefined;
-  title: string;
+  title?: string;
   style?: React.CSSProperties;
   keyPrefix: string;
 }
-
-const Box = styled(motion.div)<{ bgPhoto: string }>`
-  background-color: white;
-  background-image: url(${(props) => props.bgPhoto});
-  background-size: cover;
-  background-position: center center;
-  height: 150px;
-  font-size: 66px;
-  cursor: pointer;
-  border-radius: 5px;
-
-  &:first-child {
-    transform-origin: center left;
-  }
-  &:last-child {
-    transform-origin: center right;
-  }
-`;
 
 const Category = styled.h2`
   margin-left: 60px;
   margin-bottom: 10px;
   font-size: 2vw;
   font-weight: bolder;
-`;
-
-const Info = styled(motion.div)`
-  padding: 10px;
-  bottom: 0;
-  position: fixed; // 화면 넓이 문제 수정
-  opacity: 0;
-  width: 100%;
-  border-radius: 5px;
-  background-color: ${(props) => props.theme.black.lighter};
-  h4 {
-    text-align: center;
-    font-size: 18px;
-  }
 `;
 
 const NextBtn = styled(motion.button)`
@@ -78,17 +47,6 @@ const PrevBtn = styled(motion.button)`
   color: white;
   border: 0;
   font-size: 32px;
-`;
-
-const Row = styled(motion.div)`
-  display: grid;
-  gap: 5px;
-  grid-template-columns: repeat(6, 1fr);
-  position: absolute;
-  width: 100%;
-  padding-left: 60px;
-  padding-right: 60px;
-  overflow: visible;
 `;
 
 const Slider = styled.div`
@@ -151,7 +109,7 @@ function SliderComponent({ data, title, keyPrefix }: ISliderProps) {
   const [leaving, setLeaving] = useState(false);
   const [index, setIndex] = useState(0);
   const offset = 6;
-  const [clickedItem, setClickedItem] = useAtom(clickedItemAtom);
+  const setClickedItem = useSetAtom(clickedItemAtom);
 
   const increaseIndex = () => {
     if (data) {
@@ -199,26 +157,27 @@ function SliderComponent({ data, title, keyPrefix }: ISliderProps) {
             initial="hidden"
             animate="visible"
             exit="exit"
-            transition={{ type: "tween", duration: 1 }}
+            transition={{ type: "tween", duration: 0.75 }}
             key={keyPrefix + index}
           >
-            {data?.results
-              .slice(offset * index, offset * index + offset)
-              .map((one) => (
-                <Box
-                  layoutId={keyPrefix + one.id}
-                  onClick={() => onBoxClicked(one.id)}
-                  variants={boxVariants}
-                  whileHover="hover"
-                  initial="init"
-                  bgPhoto={makeImagePath(one.backdrop_path, "w500")}
-                  key={keyPrefix + one.id}
-                >
-                  <Info variants={infoVariants}>
-                    <h4>{"title" in one ? one.title : one.name}</h4>
-                  </Info>
-                </Box>
-              ))}
+            {data?.results.slice(offset * index, offset * index + offset).map(
+              (item) =>
+                item.backdrop_path && (
+                  <Box
+                    layoutId={keyPrefix + item.id}
+                    onClick={() => onBoxClicked(item.id)}
+                    variants={boxVariants}
+                    whileHover="hover"
+                    initial="init"
+                    bgPhoto={makeImagePath(item.backdrop_path, "w500")}
+                    key={keyPrefix + item.id}
+                  >
+                    <Info variants={infoVariants}>
+                      <h4>{"title" in item ? item.title : item.name}</h4>
+                    </Info>
+                  </Box>
+                )
+            )}
           </Row>
           <NextBtn
             onClick={increaseIndex}

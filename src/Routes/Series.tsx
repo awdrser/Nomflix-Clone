@@ -1,14 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
-import { AnimatePresence, motion, useScroll } from "framer-motion";
-import { useHistory, useRouteMatch } from "react-router-dom";
-import { styled } from "styled-components";
+import { useRouteMatch } from "react-router-dom";
 import {
   getTopRated,
   getOnTheAir,
   getPopularSeries,
-  getSeriesDetails,
   type IGetSeriesResult,
-  type IGetSeriesDetailsResult,
 } from "../api";
 import { makeImagePath } from "../utils";
 import SliderComponent from "../Components/Slider";
@@ -18,8 +14,6 @@ import Detail from "../Components/Detail";
 import { Banner, Loader, Overview, Title, Wrapper } from "../styled.d";
 
 function Series() {
-  const history = useHistory();
-  const { scrollY } = useScroll();
   const setIsHome = useSetAtom(isHomeAtom);
   setIsHome(false);
 

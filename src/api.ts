@@ -19,6 +19,14 @@ interface IGenres {
   id: number;
   name: string;
 }
+
+export interface IGetSearchResult {
+  page: number;
+  results: IMovie[];
+  total_pages: number;
+  total_results: number;
+}
+
 export interface IGetNowPlayingResult extends IGetMoviesResult {
   dates: { maximum: string; minimum: string };
 }
@@ -93,4 +101,20 @@ export function getTopRated() {
   return fetch(`${BASE_PATH}/tv/top_rated?api_key=${API_KEY}`).then(
     (response) => response.json()
   );
+}
+
+export function getSearch(keyword: string) {
+  const options = {
+    method: "GET",
+    headers: {
+      accept: "application/json",
+      Authorization:
+        "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJkODRlMzMzNGQ3MDA5YzhkZjU5MjAyZjc2MmNlMzAxNyIsIm5iZiI6MTc1NzE2NzE1Mi4yMzMsInN1YiI6IjY4YmMzZTMwZTFjODBkMTE1NDk0NmVlMyIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.deh9jujcKlvb-kFZUefoG-SkIX3rRz7oNiYqAN4hQBg",
+    },
+  };
+
+  return fetch(
+    `${BASE_PATH}/search/multi?query=${keyword}&include_adult=false&language=en-US`,
+    options
+  ).then((res) => res.json());
 }

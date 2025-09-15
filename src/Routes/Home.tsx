@@ -1,25 +1,21 @@
 import { useQuery } from "@tanstack/react-query";
 import { useSetAtom } from "jotai";
-import { isHomeAtom } from "../Atoms";
-import { useHistory, useRouteMatch } from "react-router-dom";
-import { styled } from "styled-components";
+import { useRouteMatch } from "react-router-dom";
 import {
-  getMovieDetails,
   getNowPlayingMovies,
   getPopularMovies,
   getUpcomingMovies,
-  type IGetMovieDetailsResult,
   type IGetMoviesResult,
   type IGetNowPlayingResult,
 } from "../api";
-import { makeImagePath } from "../utils";
-import SliderComponent from "../Components/Slider";
+import { isHomeAtom } from "../Atoms";
 import Detail from "../Components/Detail";
+import SliderComponent from "../Components/Slider";
 import { Banner, Loader, Overview, Title, Wrapper } from "../styled.d";
+import { makeImagePath } from "../utils";
 
 function Home() {
   const setIsHome = useSetAtom(isHomeAtom);
-
   setIsHome(true);
 
   const { data: dataNow, isLoading } = useQuery<IGetNowPlayingResult>({

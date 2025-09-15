@@ -1,5 +1,5 @@
+import { motion } from "framer-motion";
 import { styled } from "styled-components";
-
 declare module "styled-components" {
   export interface DefaultTheme {
     red: string;
@@ -17,6 +17,17 @@ declare module "styled-components" {
 
 export const Wrapper = styled.div`
   background-color: rgb(30, 30, 30);
+`;
+
+export const Row = styled(motion.div)`
+  display: grid;
+  gap: 5px;
+  grid-template-columns: repeat(6, 1fr);
+  position: absolute;
+  width: 100%;
+  padding-left: 60px;
+  padding-right: 60px;
+  overflow: visible;
 `;
 
 export const Loader = styled.div`
@@ -49,4 +60,34 @@ export const Overview = styled.p`
   width: 40%;
   max-height: 300px;
   overflow-y: hidden;
+`;
+
+export const Box = styled(motion.div)<{ bgPhoto: string }>`
+  background-color: white;
+  background-image: url(${(props) => props.bgPhoto});
+  background-size: cover;
+  background-position: center center;
+  height: 150px;
+  font-size: 66px;
+  cursor: pointer;
+  border-radius: 5px;
+
+  &:first-child {
+    transform-origin: center left;
+  }
+  &:last-child {
+    transform-origin: center right;
+  }
+`;
+export const Info = styled(motion.div)`
+  padding: 10px;
+  bottom: 0;
+  position: fixed;
+  opacity: 0;
+  width: 100%;
+  background-color: ${(props) => props.theme.black.lighter};
+  h4 {
+    text-align: center;
+    font-size: 1.2vw;
+  }
 `;

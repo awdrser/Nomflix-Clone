@@ -1,5 +1,7 @@
+import { useQuery } from "@tanstack/react-query";
 import { AnimatePresence, motion, useScroll } from "framer-motion";
-import { makeImagePath } from "../utils";
+import { useAtomValue } from "jotai";
+import { useHistory, useLocation, useRouteMatch } from "react-router-dom";
 import { styled } from "styled-components";
 import {
   type IGetMovieDetailsResult,
@@ -9,10 +11,8 @@ import {
   getMovieDetails,
   getSeriesDetails,
 } from "../api";
-import { useRouteMatch, useHistory } from "react-router-dom";
-import { useAtomValue } from "jotai";
 import { clickedItemAtom, isHomeAtom } from "../Atoms";
-import { useQuery } from "@tanstack/react-query";
+import { makeImagePath } from "../utils";
 
 interface IDetail {
   data: false | IMovie | ISeries | undefined;
@@ -88,11 +88,17 @@ const Label = styled.span`
 
 function Detail({ data }: IDetail) {
   const isHome = useAtomValue(isHomeAtom);
+  const location = useLocation();
+  const keyword = new URLSearchParams(location.search).get("keyword");
+
   const bigSeriesMatch = useRouteMatch<{ id: string }>({
     path: "/series/:id",
   });
   const bigMovieMatch = useRouteMatch<{ movieId: string }>({
     path: "/movies/:movieId",
+  });
+  const bigSearchMatch = useRouteMatch<{ id: string }>({
+    path: "/search?keyword=" + keyword + "/:id",
   });
 
   const { scrollY } = useScroll();
@@ -119,7 +125,7 @@ function Detail({ data }: IDetail) {
   return (
     <>
       <AnimatePresence>
-        {bigSeriesMatch || bigMovieMatch ? (
+        {bigSeriesMatch || bigMovieMatch || bigSearchMatch ? (
           <>
             <Overlay
               onClick={onOverlayClick}
@@ -130,9 +136,11 @@ function Detail({ data }: IDetail) {
               layoutId={
                 bigSeriesMatch
                   ? clickedItem?.sliderType + bigSeriesMatch?.params.id
-                  : clickedItem
-                    ? clickedItem?.sliderType + bigMovieMatch?.params.movieId
-                    : ""
+                  : bigSearchMatch
+                    ? clickedItem?.sliderType + bigSearchMatch.params.id
+                    : clickedItem
+                      ? clickedItem?.sliderType + bigMovieMatch?.params.movieId
+                      : ""
               }
               style={{ top: scrollY.get() + 80 }}
             >
