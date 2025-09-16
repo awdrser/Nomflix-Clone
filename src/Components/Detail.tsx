@@ -7,15 +7,16 @@ import {
   type IGetMovieDetailsResult,
   type IGetSeriesDetailsResult,
   type IMovie,
+  type ISearch,
   type ISeries,
   getMovieDetails,
   getSeriesDetails,
 } from "../api";
-import { clickedItemAtom, isHomeAtom } from "../Atoms";
+import { clickedItemAtom, routeStateAtom } from "../Atoms";
 import { makeImagePath } from "../utils";
 
 interface IDetail {
-  data: false | IMovie | ISeries | undefined;
+  data: false | IMovie | ISeries | undefined | ISearch;
 }
 
 const Overlay = styled(motion.div)`
@@ -59,7 +60,7 @@ const BigTitle = styled.h3`
 const BigOverview = styled.p`
   padding: 20px;
   position: relative;
-  max-width: 50vh;
+  max-width: 20vw;
   top: -120px;
   color: ${(props) => props.theme.white.lighter};
   line-height: 30px;
@@ -71,7 +72,7 @@ const Genres = styled.p`
   position: absolute;
   display: flex;
   right: 0;
-  max-width: 40vh;
+  max-width: 20vw;
   margin-top: -95px;
   padding-right: 20px;
   font-size: 15px;
@@ -87,7 +88,7 @@ const Label = styled.span`
 `;
 
 function Detail({ data }: IDetail) {
-  const isHome = useAtomValue(isHomeAtom);
+  const routeState = useAtomValue(routeStateAtom);
   const location = useLocation();
   const keyword = new URLSearchParams(location.search).get("keyword");
 
@@ -97,25 +98,35 @@ function Detail({ data }: IDetail) {
   const bigMovieMatch = useRouteMatch<{ movieId: string }>({
     path: "/movies/:movieId",
   });
-  const bigSearchMatch = useRouteMatch<{ id: string }>({
-    path: "/search?keyword=" + keyword + "/:id",
-  });
+  const bigSearchMatch = useRouteMatch<{ id: string }>("/search/:id"); // 쿼리 파라미터(keyword)는 경로에 영향을 주지 않고 별도로 처리됨
 
   const { scrollY } = useScroll();
   const history = useHistory();
-  const onOverlayClick = () =>
-    isHome ? history.push("") : history.push("/series");
+  const onOverlayClick = () => {
+    if (routeState == "home") {
+      history.push("/");
+    } else if (routeState == "search") {
+      history.push(`/search?keyword=${keyword}`);
+    } else {
+      history.push("/series");
+    }
+  };
+
   const clickedItem = useAtomValue(clickedItemAtom);
 
   const { data: dataDetail, isLoading: isLoadingDetail } = useQuery<
     IGetSeriesDetailsResult | IGetMovieDetailsResult
   >({
-    queryKey: ["detail"],
+    queryKey: ["detail", clickedItem?.id],
     queryFn: () => {
       if (data) {
-        return bigSeriesMatch
+        return routeState === "series"
           ? getSeriesDetails(clickedItem?.id as number)
-          : getMovieDetails(clickedItem?.id as number);
+          : routeState === "home"
+            ? getMovieDetails(clickedItem?.id as number)
+            : "media_type" in data && data.media_type === "tv"
+              ? getSeriesDetails(clickedItem?.id as number)
+              : getMovieDetails(clickedItem?.id as number);
       }
       return Promise.reject(new Error("No Series ID provided"));
     },
@@ -157,9 +168,7 @@ function Detail({ data }: IDetail) {
                   <BigTitle>
                     {"title" in data ? data.title : data.name}
                   </BigTitle>
-                  {isLoadingDetail ? (
-                    "Loading"
-                  ) : (
+                  {isLoadingDetail ? null : (
                     <Genres>
                       <Label>Genres:</Label>
                       {dataDetail?.genres.map((genre) => genre.name).join(", ")}

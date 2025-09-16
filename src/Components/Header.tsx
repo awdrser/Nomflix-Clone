@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Link, useHistory, useRouteMatch } from "react-router-dom";
 import styled from "styled-components";
-import { isHomeAtom } from "../Atoms";
+import { routeStateAtom } from "../Atoms";
 
 interface IForm {
   keyword: string;
@@ -120,7 +120,7 @@ const navVariants = {
 function Header() {
   const homeMatch = useRouteMatch({ path: "/", exact: true });
   const tvMatch = useRouteMatch({ path: "/series", exact: false });
-  const isHome = useAtomValue(isHomeAtom);
+  const routeState = useAtomValue(routeStateAtom);
   const [searchOpen, setSearchOpen] = useState(false);
   const inputAnimation = useAnimation();
   const navAnimation = useAnimation();
@@ -134,7 +134,7 @@ function Header() {
     if (keyword && keyword.length > 0) {
       history.push(`/search?keyword=${keyword}`);
     } else {
-      isHome ? history.push(`/`) : history.push(`/series`);
+      routeState === "home" ? history.push(`/`) : history.push(`/series`);
     }
   }, [keyword, history]);
 

@@ -20,9 +20,19 @@ interface IGenres {
   name: string;
 }
 
+export interface ISearch {
+  id: number;
+  backdrop_path: string;
+  genre_ids: number[];
+  media_type: string;
+  name?: string;
+  title?: string;
+  overview: string;
+}
+
 export interface IGetSearchResult {
   page: number;
-  results: IMovie[];
+  results: IMovie[] | ISeries[];
   total_pages: number;
   total_results: number;
 }

@@ -1,21 +1,21 @@
 import { useQuery } from "@tanstack/react-query";
+import { useSetAtom } from "jotai";
 import { useRouteMatch } from "react-router-dom";
 import {
-  getTopRated,
   getOnTheAir,
   getPopularSeries,
+  getTopRated,
   type IGetSeriesResult,
 } from "../api";
-import { makeImagePath } from "../utils";
-import SliderComponent from "../Components/Slider";
-import { useSetAtom } from "jotai";
-import { isHomeAtom } from "../Atoms";
+import { routeStateAtom } from "../Atoms";
 import Detail from "../Components/Detail";
+import SliderComponent from "../Components/Slider";
 import { Banner, Loader, Overview, Title, Wrapper } from "../styled.d";
+import { makeImagePath } from "../utils";
 
 function Series() {
-  const setIsHome = useSetAtom(isHomeAtom);
-  setIsHome(false);
+  const setrouteState = useSetAtom(routeStateAtom);
+  setrouteState("series");
 
   const { data: dataOnTheAir, isLoading } = useQuery<IGetSeriesResult>({
     queryKey: ["tv", "onTheAir"],

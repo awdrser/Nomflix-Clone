@@ -1,6 +1,6 @@
 import { atom } from "jotai";
 
-export const isHomeAtom = atom(true);
+export const routeStateAtom = atom<"home" | "series" | "search">("home");
 
 export interface IClickedItem {
   sliderType: string;

@@ -8,15 +8,15 @@ import {
   type IGetMoviesResult,
   type IGetNowPlayingResult,
 } from "../api";
-import { isHomeAtom } from "../Atoms";
+import { routeStateAtom } from "../Atoms";
 import Detail from "../Components/Detail";
 import SliderComponent from "../Components/Slider";
 import { Banner, Loader, Overview, Title, Wrapper } from "../styled.d";
 import { makeImagePath } from "../utils";
 
 function Home() {
-  const setIsHome = useSetAtom(isHomeAtom);
-  setIsHome(true);
+  const setRouteState = useSetAtom(routeStateAtom);
+  setRouteState("home");
 
   const { data: dataNow, isLoading } = useQuery<IGetNowPlayingResult>({
     queryKey: ["movies", "nowPlaying"],

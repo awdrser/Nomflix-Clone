@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useSetAtom } from "jotai";
 import { useHistory, useLocation, useRouteMatch } from "react-router-dom";
 import { getSearch, type IGetSearchResult } from "../api";
-import { clickedItemAtom } from "../Atoms";
+import { clickedItemAtom, routeStateAtom } from "../Atoms";
 import Detail from "../Components/Detail";
 import { Box, Info, Loader, Row, Wrapper } from "../styled.d";
 import { makeImagePath } from "../utils";
@@ -35,7 +35,9 @@ function Search() {
   const keyword = new URLSearchParams(location.search).get("keyword");
   const history = useHistory();
   const setClickedItem = useSetAtom(clickedItemAtom);
+  const setRouteState = useSetAtom(routeStateAtom);
 
+  setRouteState("search");
   const { data, isLoading } = useQuery<IGetSearchResult>({
     queryKey: ["search", keyword],
     queryFn: () => getSearch(keyword as string),
@@ -64,7 +66,6 @@ function Search() {
             <Row style={{ top: "25vh", gridRowGap: "10vh" }}>
               {data?.results.map(
                 (item) =>
-                  item.title &&
                   item.backdrop_path && (
                     <Box
                       layoutId={"search" + item.id}
@@ -76,7 +77,7 @@ function Search() {
                       key={item.id}
                     >
                       <Info variants={infoVariants}>
-                        <h4>{item.title}</h4>
+                        <h4>{"title" in item ? item.title : item.name}</h4>
                       </Info>
                     </Box>
                   )
