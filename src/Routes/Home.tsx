@@ -14,6 +14,12 @@ import SliderComponent from "../Components/Slider";
 import { Banner, Loader, Overview, Title, Wrapper } from "../styled.d";
 import { makeImagePath } from "../utils";
 
+export function shortOverview(text: string | undefined) {
+  if (!text) return null;
+  const maxLen = 120;
+  return text.length > maxLen ? text.slice(0, maxLen) + "..." : text;
+}
+
 function Home() {
   const setRouteState = useSetAtom(routeStateAtom);
   setRouteState("home");
@@ -61,7 +67,7 @@ function Home() {
             bgPhoto={makeImagePath(dataNow?.results[0].backdrop_path || "")}
           >
             <Title>{dataNow?.results[0].title}</Title>
-            <Overview>{dataNow?.results[0].overview}</Overview>
+            <Overview>{shortOverview(dataNow?.results[0].overview)}</Overview>
           </Banner>
           <SliderComponent
             data={dataNow}

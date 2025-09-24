@@ -12,6 +12,7 @@ import Detail from "../Components/Detail";
 import SliderComponent from "../Components/Slider";
 import { Banner, Loader, Overview, Title, Wrapper } from "../styled.d";
 import { makeImagePath } from "../utils";
+import { shortOverview } from "./Home";
 
 function Series() {
   const setrouteState = useSetAtom(routeStateAtom);
@@ -60,7 +61,9 @@ function Series() {
             )}
           >
             <Title>{dataOnTheAir?.results[0].name}</Title>
-            <Overview>{dataOnTheAir?.results[0].overview}</Overview>
+            <Overview>
+              {shortOverview(dataOnTheAir?.results[0].overview)}
+            </Overview>
           </Banner>
           <SliderComponent
             data={dataOnTheAir}

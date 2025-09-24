@@ -66,51 +66,51 @@ export interface IGetSeriesDetailsResult {
   release_date: string;
 }
 export function getMovieDetails(movie_id: number) {
-  return fetch(`${BASE_PATH}/movie/${movie_id}?api_key=${API_KEY}`).then(
-    (response) => response.json()
-  );
+  return fetch(
+    `${BASE_PATH}/movie/${movie_id}?api_key=${API_KEY}&language=ko-KR&region=KR`
+  ).then((response) => response.json());
 }
 
 export function getSeriesDetails(series_id: number) {
-  return fetch(`${BASE_PATH}/tv/${series_id}?api_key=${API_KEY}`).then(
-    (response) => response.json()
-  );
+  return fetch(
+    `${BASE_PATH}/tv/${series_id}?api_key=${API_KEY}&language=ko-KR&region=KR`
+  ).then((response) => response.json());
 }
 
 export function getNowPlayingMovies() {
-  return fetch(`${BASE_PATH}/movie/now_playing?api_key=${API_KEY}`).then(
-    (response) => response.json()
-  );
+  return fetch(
+    `${BASE_PATH}/movie/now_playing?api_key=${API_KEY}&language=ko-KR&region=KR`
+  ).then((response) => response.json());
 }
 
 export function getPopularMovies() {
-  return fetch(`${BASE_PATH}/movie/popular?api_key=${API_KEY}`).then(
-    (response) => response.json()
-  );
+  return fetch(
+    `${BASE_PATH}/movie/popular?api_key=${API_KEY}&language=ko-KR&region=KR`
+  ).then((response) => response.json());
 }
 
 export function getUpcomingMovies() {
-  return fetch(`${BASE_PATH}/movie/upcoming?api_key=${API_KEY}`).then(
-    (response) => response.json()
-  );
+  return fetch(
+    `${BASE_PATH}/movie/upcoming?api_key=${API_KEY}&language=ko-KR&region=KR`
+  ).then((response) => response.json());
 }
 
 export function getOnTheAir() {
-  return fetch(`${BASE_PATH}/tv/on_the_air?api_key=${API_KEY}`).then(
-    (response) => response.json()
-  );
+  return fetch(
+    `${BASE_PATH}/tv/on_the_air?api_key=${API_KEY}&language=ko-KR&region=KR`
+  ).then((response) => response.json());
 }
 
 export function getPopularSeries() {
-  return fetch(`${BASE_PATH}/tv/popular?api_key=${API_KEY}`).then((response) =>
-    response.json()
-  );
+  return fetch(
+    `${BASE_PATH}/tv/popular?api_key=${API_KEY}&language=ko-KR&region=KR`
+  ).then((response) => response.json());
 }
 
 export function getTopRated() {
-  return fetch(`${BASE_PATH}/tv/top_rated?api_key=${API_KEY}`).then(
-    (response) => response.json()
-  );
+  return fetch(
+    `${BASE_PATH}/tv/top_rated?api_key=${API_KEY}&language=ko-KR&region=KR`
+  ).then((response) => response.json());
 }
 
 export function getSearch(keyword: string) {
@@ -124,7 +124,7 @@ export function getSearch(keyword: string) {
   };
 
   return fetch(
-    `${BASE_PATH}/search/multi?query=${keyword}&include_adult=false&language=en-US`,
+    `${BASE_PATH}/search/multi?query=${keyword}&include_adult=false&language=ko-KR&region=KR`,
     options
   ).then((res) => res.json());
 }

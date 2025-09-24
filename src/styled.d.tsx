@@ -52,15 +52,15 @@ export const Banner = styled.div<{ bgPhoto: string }>`
 `;
 
 export const Title = styled.h2`
-  font-size: 4vw;
+  font-size: 4em;
   margin-bottom: 1.5vw;
   width: 40%;
 `;
 
 export const Overview = styled.p`
-  font-size: 1.5vw;
+  font-size: 1.5em;
   width: 40%;
-  max-height: 300px;
+  max-height: 20%;
   overflow-y: hidden;
 `;
 
@@ -90,6 +90,6 @@ export const Info = styled(motion.div)`
   background-color: ${(props) => props.theme.black.lighter};
   h4 {
     text-align: center;
-    font-size: 1.2vw;
+    font-size: 0.3em;
   }
 `;
