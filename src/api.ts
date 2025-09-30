@@ -7,12 +7,14 @@ export interface IMovie {
   poster_path: string;
   title: string;
   overview: string;
+  vote_average: number;
 }
 export interface ISeries {
   name: string;
   id: number;
   overview: string;
   backdrop_path: string;
+  vote_average: number;
 }
 
 interface IGenres {
@@ -59,11 +61,13 @@ export interface IGetMovieDetailsResult {
   genres: IGenres[];
   release_date: string;
   runtime: number;
+  vote_average: number;
 }
 
 export interface IGetSeriesDetailsResult {
   genres: IGenres[];
   release_date: string;
+  vote_average: number;
 }
 export function getMovieDetails(movie_id: number) {
   return fetch(

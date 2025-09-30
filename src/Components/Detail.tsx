@@ -60,7 +60,7 @@ const BigTitle = styled.h3`
 const BigOverview = styled.p`
   padding: 20px;
   position: relative;
-  max-width: 20vw;
+  max-width: 25vw;
   top: -120px;
   color: ${(props) => props.theme.white.lighter};
   line-height: 30px;
@@ -68,15 +68,18 @@ const BigOverview = styled.p`
   margin-bottom: -120px;
 `;
 
-const Genres = styled.p`
+const GenresDiv = styled.div`
   position: absolute;
-  display: flex;
   right: 0;
-  max-width: 20vw;
+  max-width: 15vw;
   margin-top: -95px;
+`;
+const Genres = styled.p`
+  display: flex;
   padding-right: 20px;
   font-size: 15px;
   font-weight: bolder;
+  margin-bottom: 10px;
 `;
 
 const Label = styled.span`
@@ -168,11 +171,23 @@ function Detail({ data }: IDetail) {
                   <BigTitle>
                     {"title" in data ? data.title : data.name}
                   </BigTitle>
-                  {isLoadingDetail ? null : (
-                    <Genres>
-                      <Label>Genres:</Label>
-                      {dataDetail?.genres.map((genre) => genre.name).join(", ")}
-                    </Genres>
+                  {isLoadingDetail ? (
+                    <GenresDiv>Loading...</GenresDiv>
+                  ) : (
+                    <>
+                      <GenresDiv>
+                        <Genres>
+                          <Label>Genres:</Label>
+                          {dataDetail?.genres
+                            .map((genre) => genre.name)
+                            .join(", ")}
+                        </Genres>
+                        <Genres>
+                          <Label>Rate:</Label>
+                          {dataDetail?.vote_average.toFixed(1)} / 10
+                        </Genres>
+                      </GenresDiv>
+                    </>
                   )}
 
                   <BigOverview>{data.overview}</BigOverview>

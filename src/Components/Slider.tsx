@@ -36,6 +36,7 @@ const NextBtn = styled(motion.button)`
   border: 0;
   right: 0;
   font-size: 32px;
+  transform-origin: right center;
 `;
 
 const PrevBtn = styled(motion.button)`
@@ -47,6 +48,7 @@ const PrevBtn = styled(motion.button)`
   color: white;
   border: 0;
   font-size: 32px;
+  transform-origin: left center;
 `;
 
 const Slider = styled.div`

@@ -17,8 +17,8 @@ declare module "styled-components" {
 
 export const Wrapper = styled.div`
   background-color: rgb(30, 30, 30);
-  min-height: 100vh;
-  width: 100vw;
+  min-height: 100%;
+  width: 100%;
 `;
 
 export const Row = styled(motion.div)`
@@ -29,7 +29,6 @@ export const Row = styled(motion.div)`
   width: 100%;
   padding-left: 60px;
   padding-right: 60px;
-  overflow: visible;
 `;
 
 export const Loader = styled.div`
