@@ -26,9 +26,11 @@ const Overlay = styled(motion.div)`
   height: 100%;
   opacity: 0;
   background-color: rgba(0, 0, 0, 0.5);
+  z-index: 100;
 `;
 
 const BigMovie = styled(motion.div)`
+  min-height: 500px;
   position: absolute;
   width: 40vw;
   left: 0;
@@ -40,6 +42,7 @@ const BigMovie = styled(motion.div)`
   height: auto;
   margin-bottom: 0;
   padding-bottom: 0;
+  z-index: 200;
 `;
 const BigCover = styled.div`
   width: 100%;

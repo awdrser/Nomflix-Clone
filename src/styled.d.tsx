@@ -86,6 +86,8 @@ export const Info = styled(motion.div)`
   position: fixed;
   opacity: 0;
   width: 100%;
+  border-bottom-left-radius: 5px;
+  border-bottom-right-radius: 5px;
   background-color: ${(props) => props.theme.black.lighter};
   h4 {
     text-align: center;

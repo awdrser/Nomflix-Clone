@@ -69,18 +69,12 @@ function Home() {
           </Banner>
           <Slider data={dataNow} title="Now Playing" keyPrefix="now_" />
           <Slider
-            style={{ marginTop: "300px" }}
             data={dataTopRated}
             title="Top Rated"
             keyPrefix="topRated__"
           />
 
-          <Slider
-            style={{ marginTop: "300px" }}
-            data={dataUpcoming}
-            title="Upcoming"
-            keyPrefix="upcoming__"
-          />
+          <Slider data={dataUpcoming} title="Upcoming" keyPrefix="upcoming__" />
 
           <Detail data={clickedMovie}></Detail>
         </>

@@ -10,10 +10,10 @@ import {
 } from "../api";
 import { routeStateAtom } from "../Atoms";
 import Detail from "../Components/Detail";
+import Slider from "../Components/Slider";
 import { Banner, Loader, Overview, Title, Wrapper } from "../styled.d";
 import { makeImagePath } from "../utils";
 import { shortOverview } from "./Home";
-import Slider from "../Components/Slider";
 
 function Series() {
   const setrouteState = useSetAtom(routeStateAtom);
@@ -53,6 +53,9 @@ function Series() {
         (series) => series.id + "" === bigSeriesMatch.params.id
       ) ||
       dataTopRated?.results.find(
+        (series) => series.id + "" === bigSeriesMatch.params.id
+      ) ||
+      datAiringToday?.results.find(
         (series) => series.id + "" === bigSeriesMatch.params.id
       ));
 

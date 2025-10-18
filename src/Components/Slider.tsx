@@ -21,9 +21,10 @@ interface ISliderProps {
 
 const Category = styled.h2`
   margin-left: 60px;
-  margin-bottom: 10px;
+  position: absolute;
   font-size: 2vw;
   font-weight: bolder;
+  top: 40px;
 `;
 
 const NextBtn = styled(motion.button)`
@@ -53,7 +54,6 @@ const PrevBtn = styled(motion.button)`
 
 const SliderContainer = styled.div`
   position: relative;
-  top: -400px;
 `;
 
 const btnVariants = {
@@ -96,6 +96,15 @@ const rowVariants = {
   }),
 };
 
+const OuterContainer = styled.div`
+  overflow-x: hidden;
+  position: relative;
+  width: 100%;
+  height: 300px;
+  overflow-y: hidden;
+  padding-top: 100px;
+`;
+
 function Slider({ data, title, keyPrefix }: ISliderProps) {
   const history = useHistory();
   const onBoxClicked = (id: number) => {
@@ -137,58 +146,60 @@ function Slider({ data, title, keyPrefix }: ISliderProps) {
 
   return (
     <>
-      <SliderContainer style={{ marginTop: "300px" }}>
+      <SliderContainer style={{ top: "-150px" }}>
         <Category>{title}</Category>
-        <AnimatePresence
-          initial={false}
-          onExitComplete={() => setLeaving(false)}
-          custom={isBack}
-        >
-          {
-            <PrevBtn
-              onClick={decreaseIndex}
+        <OuterContainer>
+          <AnimatePresence
+            initial={false}
+            onExitComplete={() => setLeaving(false)}
+            custom={isBack}
+          >
+            {
+              <PrevBtn
+                onClick={decreaseIndex}
+                variants={btnVariants}
+                whileHover="hover"
+              >
+                {"<"}
+              </PrevBtn>
+            }
+            <Row
+              custom={isBack}
+              variants={rowVariants}
+              initial="hidden"
+              animate="visible"
+              exit="exit"
+              transition={{ type: "tween", duration: 0.75 }}
+              key={keyPrefix + index}
+            >
+              {data?.results.slice(offset * index, offset * index + offset).map(
+                (item) =>
+                  item.backdrop_path && (
+                    <Box
+                      layoutId={keyPrefix + item.id}
+                      onClick={() => onBoxClicked(item.id)}
+                      variants={boxVariants}
+                      whileHover="hover"
+                      initial="init"
+                      bgPhoto={makeImagePath(item.backdrop_path, "w500")}
+                      key={keyPrefix + item.id}
+                    >
+                      <Info variants={infoVariants}>
+                        <h4>{"title" in item ? item.title : item.name}</h4>
+                      </Info>
+                    </Box>
+                  )
+              )}
+            </Row>
+            <NextBtn
+              onClick={increaseIndex}
               variants={btnVariants}
               whileHover="hover"
             >
-              {"<"}
-            </PrevBtn>
-          }
-          <Row
-            custom={isBack}
-            variants={rowVariants}
-            initial="hidden"
-            animate="visible"
-            exit="exit"
-            transition={{ type: "tween", duration: 0.75 }}
-            key={keyPrefix + index}
-          >
-            {data?.results.slice(offset * index, offset * index + offset).map(
-              (item) =>
-                item.backdrop_path && (
-                  <Box
-                    layoutId={keyPrefix + item.id}
-                    onClick={() => onBoxClicked(item.id)}
-                    variants={boxVariants}
-                    whileHover="hover"
-                    initial="init"
-                    bgPhoto={makeImagePath(item.backdrop_path, "w500")}
-                    key={keyPrefix + item.id}
-                  >
-                    <Info variants={infoVariants}>
-                      <h4>{"title" in item ? item.title : item.name}</h4>
-                    </Info>
-                  </Box>
-                )
-            )}
-          </Row>
-          <NextBtn
-            onClick={increaseIndex}
-            variants={btnVariants}
-            whileHover="hover"
-          >
-            {">"}
-          </NextBtn>
-        </AnimatePresence>
+              {">"}
+            </NextBtn>
+          </AnimatePresence>
+        </OuterContainer>
       </SliderContainer>
     </>
   );
