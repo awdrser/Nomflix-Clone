@@ -6,7 +6,7 @@ import Series from "./Routes/Series";
 
 function App() {
   return (
-    <HashRouter basename={"/"}>
+    <HashRouter>
       <Header />
       <Switch>
         <Route path="/series" component={Series} />
