@@ -1,4 +1,4 @@
-import { Route, BrowserRouter as Router, Switch } from "react-router-dom";
+import { HashRouter, Route, Switch } from "react-router-dom";
 import Header from "./Components/Header";
 import Home from "./Routes/Home";
 import Search from "./Routes/Search";
@@ -6,7 +6,7 @@ import Series from "./Routes/Series";
 
 function App() {
   return (
-    <Router>
+    <HashRouter basename={"/"}>
       <Header />
       <Switch>
         <Route path="/series" component={Series} />
@@ -14,7 +14,7 @@ function App() {
         <Route path="/movies/:movieId" exact component={Home} />
         <Route path="/" exact component={Home} />
       </Switch>
-    </Router>
+    </HashRouter>
   );
 }
 
