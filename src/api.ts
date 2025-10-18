@@ -68,6 +68,7 @@ export interface IGetSeriesDetailsResult {
   genres: IGenres[];
   release_date: string;
   vote_average: number;
+  number_of_episodes: number;
 }
 export function getMovieDetails(movie_id: number) {
   return fetch(
@@ -87,9 +88,9 @@ export function getNowPlayingMovies() {
   ).then((response) => response.json());
 }
 
-export function getPopularMovies() {
+export function getTopRatedMovies() {
   return fetch(
-    `${BASE_PATH}/movie/popular?api_key=${API_KEY}&language=ko-KR&region=KR`
+    `${BASE_PATH}/movie/top_rated?api_key=${API_KEY}&language=ko-KR&region=KR`
   ).then((response) => response.json());
 }
 
@@ -111,11 +112,25 @@ export function getPopularSeries() {
   ).then((response) => response.json());
 }
 
-export function getTopRated() {
+export function getTopRatedSeries() {
   return fetch(
     `${BASE_PATH}/tv/top_rated?api_key=${API_KEY}&language=ko-KR&region=KR`
   ).then((response) => response.json());
 }
+
+export function getAiringTodaySeries() {
+  return fetch(
+    `${BASE_PATH}/tv/airing_today?api_key=${API_KEY}&language=ko-KR`
+  ).then((response) => response.json());
+}
+
+export function getLastestMovie() {
+  return fetch(`${BASE_PATH}/movie/latest?api_key=${API_KEY}`).then(
+    (response) => response.json()
+  );
+}
+
+export function getLastestMovies() {}
 
 export function getSearch(keyword: string) {
   const options = {

@@ -68,13 +68,13 @@ const BigOverview = styled.p`
   margin-bottom: -120px;
 `;
 
-const GenresDiv = styled.div`
+const CategoryContainer = styled.div`
   position: absolute;
   right: 0;
   max-width: 15vw;
   margin-top: -95px;
 `;
-const Genres = styled.p`
+const Category = styled.p`
   display: flex;
   padding-right: 20px;
   font-size: 15px;
@@ -172,21 +172,33 @@ function Detail({ data }: IDetail) {
                     {"title" in data ? data.title : data.name}
                   </BigTitle>
                   {isLoadingDetail ? (
-                    <GenresDiv>Loading...</GenresDiv>
+                    <CategoryContainer>Loading...</CategoryContainer>
                   ) : (
                     <>
-                      <GenresDiv>
-                        <Genres>
+                      <CategoryContainer>
+                        <Category>
                           <Label>Genres:</Label>
                           {dataDetail?.genres
                             .map((genre) => genre.name)
                             .join(", ")}
-                        </Genres>
-                        <Genres>
+                        </Category>
+                        <Category>
                           <Label>Rate:</Label>
                           {dataDetail?.vote_average.toFixed(1)} / 10
-                        </Genres>
-                      </GenresDiv>
+                        </Category>
+                        {dataDetail && "number_of_episodes" in dataDetail ? (
+                          <Category>
+                            <Label>Episodes:</Label>
+                            {dataDetail?.number_of_episodes}
+                          </Category>
+                        ) : null}
+                        {dataDetail && "runtime" in dataDetail ? (
+                          <Category>
+                            <Label>Runtime:</Label>
+                            {dataDetail?.runtime} min
+                          </Category>
+                        ) : null}
+                      </CategoryContainer>
                     </>
                   )}
 

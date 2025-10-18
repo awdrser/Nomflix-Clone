@@ -2,11 +2,13 @@ import { useQuery } from "@tanstack/react-query";
 import { useSetAtom } from "jotai";
 import { useRouteMatch } from "react-router-dom";
 import {
+  getLastestMovie,
   getNowPlayingMovies,
-  getPopularMovies,
+  getTopRatedMovies,
   getUpcomingMovies,
   type IGetMoviesResult,
   type IGetNowPlayingResult,
+  type IMovie,
 } from "../api";
 import { routeStateAtom } from "../Atoms";
 import Detail from "../Components/Detail";
@@ -28,10 +30,10 @@ function Home() {
     queryKey: ["movies", "nowPlaying"],
     queryFn: getNowPlayingMovies,
   });
-  const { data: dataPopular, isLoading: isLoadingPopular } =
+  const { data: dataTopRated, isLoading: isLoadingTopRated } =
     useQuery<IGetMoviesResult>({
-      queryKey: ["movies", "popular"],
-      queryFn: getPopularMovies,
+      queryKey: ["movies", "topLated"],
+      queryFn: getTopRatedMovies,
     });
   const { data: dataUpcoming, isLoading: isLoadingUpcoming } =
     useQuery<IGetNowPlayingResult>({
@@ -39,7 +41,10 @@ function Home() {
       queryFn: getUpcomingMovies,
     });
 
-  console.log(dataPopular);
+  const { data: dataLastest, isLoading: isLoadingLastest } = useQuery<IMovie>({
+    queryKey: ["movies", "Lastest"],
+    queryFn: getLastestMovie,
+  });
 
   const bigMovieMatch = useRouteMatch<{ movieId: string }>({
     path: "/movies/:movieId",
@@ -50,7 +55,7 @@ function Home() {
     (dataNow?.results.find(
       (movie) => movie.id + "" === bigMovieMatch.params.movieId
     ) ||
-      dataPopular?.results.find(
+      dataTopRated?.results.find(
         (movie) => movie.id + "" === bigMovieMatch.params.movieId
       ) ||
       dataUpcoming?.results.find(
@@ -59,7 +64,10 @@ function Home() {
 
   return (
     <Wrapper>
-      {isLoading || isLoadingPopular || isLoadingUpcoming ? (
+      {isLoading ||
+      isLoadingTopRated ||
+      isLoadingUpcoming ||
+      isLoadingLastest ? (
         <Loader>Loading...</Loader>
       ) : (
         <>
@@ -76,9 +84,9 @@ function Home() {
           />
           <SliderComponent
             style={{ marginTop: "300px" }}
-            data={dataPopular}
-            title="Popular"
-            keyPrefix="popular__"
+            data={dataTopRated}
+            title="Top Rated"
+            keyPrefix="topRated__"
           />
 
           <SliderComponent

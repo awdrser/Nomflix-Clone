@@ -2,9 +2,10 @@ import { useQuery } from "@tanstack/react-query";
 import { useSetAtom } from "jotai";
 import { useRouteMatch } from "react-router-dom";
 import {
+  getAiringTodaySeries,
   getOnTheAir,
   getPopularSeries,
-  getTopRated,
+  getTopRatedSeries,
   type IGetSeriesResult,
 } from "../api";
 import { routeStateAtom } from "../Atoms";
@@ -30,7 +31,13 @@ function Series() {
   const { data: dataTopRated, isLoading: isLoadingTopRated } =
     useQuery<IGetSeriesResult>({
       queryKey: ["tv", "topRated"],
-      queryFn: getTopRated,
+      queryFn: getTopRatedSeries,
+    });
+
+  const { data: datAiringToday, isLoading: isLoadingAiringToday } =
+    useQuery<IGetSeriesResult>({
+      queryKey: ["tv", "airingToday"],
+      queryFn: getAiringTodaySeries,
     });
 
   const bigSeriesMatch = useRouteMatch<{ id: string }>({
@@ -51,7 +58,10 @@ function Series() {
 
   return (
     <Wrapper>
-      {isLoading || isLoadingPopular || isLoadingTopRated ? (
+      {isLoading ||
+      isLoadingPopular ||
+      isLoadingTopRated ||
+      isLoadingAiringToday ? (
         <Loader>Loading...</Loader>
       ) : (
         <>
@@ -65,6 +75,13 @@ function Series() {
               {shortOverview(dataOnTheAir?.results[0].overview)}
             </Overview>
           </Banner>
+
+          <SliderComponent
+            data={datAiringToday}
+            title="Airing Today"
+            keyPrefix="series__airingToday_"
+          />
+
           <SliderComponent
             data={dataOnTheAir}
             title="On The Air"
