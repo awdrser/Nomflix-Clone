@@ -51,7 +51,7 @@ const PrevBtn = styled(motion.button)`
   transform-origin: left center;
 `;
 
-const Slider = styled.div`
+const SliderContainer = styled.div`
   position: relative;
   top: -400px;
 `;
@@ -96,7 +96,7 @@ const rowVariants = {
   }),
 };
 
-function SliderComponent({ data, title, keyPrefix }: ISliderProps) {
+function Slider({ data, title, keyPrefix }: ISliderProps) {
   const history = useHistory();
   const onBoxClicked = (id: number) => {
     if (!data) return null;
@@ -137,7 +137,7 @@ function SliderComponent({ data, title, keyPrefix }: ISliderProps) {
 
   return (
     <>
-      <Slider style={{ marginTop: "300px" }}>
+      <SliderContainer style={{ marginTop: "300px" }}>
         <Category>{title}</Category>
         <AnimatePresence
           initial={false}
@@ -189,9 +189,9 @@ function SliderComponent({ data, title, keyPrefix }: ISliderProps) {
             {">"}
           </NextBtn>
         </AnimatePresence>
-      </Slider>
+      </SliderContainer>
     </>
   );
 }
 
-export default SliderComponent;
+export default Slider;

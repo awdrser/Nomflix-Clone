@@ -2,17 +2,15 @@ import { useQuery } from "@tanstack/react-query";
 import { useSetAtom } from "jotai";
 import { useRouteMatch } from "react-router-dom";
 import {
-  getLastestMovie,
   getNowPlayingMovies,
   getTopRatedMovies,
   getUpcomingMovies,
   type IGetMoviesResult,
   type IGetNowPlayingResult,
-  type IMovie,
 } from "../api";
 import { routeStateAtom } from "../Atoms";
 import Detail from "../Components/Detail";
-import SliderComponent from "../Components/Slider";
+import Slider from "../Components/Slider";
 import { Banner, Loader, Overview, Title, Wrapper } from "../styled.d";
 import { makeImagePath } from "../utils";
 
@@ -41,11 +39,6 @@ function Home() {
       queryFn: getUpcomingMovies,
     });
 
-  const { data: dataLastest, isLoading: isLoadingLastest } = useQuery<IMovie>({
-    queryKey: ["movies", "Lastest"],
-    queryFn: getLastestMovie,
-  });
-
   const bigMovieMatch = useRouteMatch<{ movieId: string }>({
     path: "/movies/:movieId",
   });
@@ -64,10 +57,7 @@ function Home() {
 
   return (
     <Wrapper>
-      {isLoading ||
-      isLoadingTopRated ||
-      isLoadingUpcoming ||
-      isLoadingLastest ? (
+      {isLoading || isLoadingTopRated || isLoadingUpcoming ? (
         <Loader>Loading...</Loader>
       ) : (
         <>
@@ -77,19 +67,15 @@ function Home() {
             <Title>{dataNow?.results[0].title}</Title>
             <Overview>{shortOverview(dataNow?.results[0].overview)}</Overview>
           </Banner>
-          <SliderComponent
-            data={dataNow}
-            title="Now Playing"
-            keyPrefix="now_"
-          />
-          <SliderComponent
+          <Slider data={dataNow} title="Now Playing" keyPrefix="now_" />
+          <Slider
             style={{ marginTop: "300px" }}
             data={dataTopRated}
             title="Top Rated"
             keyPrefix="topRated__"
           />
 
-          <SliderComponent
+          <Slider
             style={{ marginTop: "300px" }}
             data={dataUpcoming}
             title="Upcoming"

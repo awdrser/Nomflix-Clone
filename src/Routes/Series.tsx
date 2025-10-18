@@ -10,10 +10,10 @@ import {
 } from "../api";
 import { routeStateAtom } from "../Atoms";
 import Detail from "../Components/Detail";
-import SliderComponent from "../Components/Slider";
 import { Banner, Loader, Overview, Title, Wrapper } from "../styled.d";
 import { makeImagePath } from "../utils";
 import { shortOverview } from "./Home";
+import Slider from "../Components/Slider";
 
 function Series() {
   const setrouteState = useSetAtom(routeStateAtom);
@@ -76,25 +76,25 @@ function Series() {
             </Overview>
           </Banner>
 
-          <SliderComponent
+          <Slider
             data={datAiringToday}
             title="Airing Today"
             keyPrefix="series__airingToday_"
           />
 
-          <SliderComponent
+          <Slider
             data={dataOnTheAir}
             title="On The Air"
             keyPrefix="series__onTheAir_"
           />
-          <SliderComponent
+          <Slider
             style={{ marginTop: "300px" }}
             data={dataPopular}
             title="Popular"
             keyPrefix="series__popular__"
           />
 
-          <SliderComponent
+          <Slider
             style={{ marginTop: "300px" }}
             data={dataTopRated}
             title="Top Rated"
