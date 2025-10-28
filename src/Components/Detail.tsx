@@ -16,7 +16,7 @@ import { clickedItemAtom, routeStateAtom } from "../Atoms";
 import { makeImagePath } from "../utils";
 
 interface IDetail {
-  data: false | IMovie | ISeries | undefined | ISearch;
+  data?: IMovie | ISeries | ISearch;
 }
 
 const Overlay = styled(motion.div)`
@@ -93,7 +93,19 @@ const Label = styled.span`
   margin-right: 10px;
 `;
 
-function Detail({ data }: IDetail) {
+function Detail({
+  data = {
+    backdrop_path: "",
+    id: 0,
+    genre_ids: [],
+    title: "",
+    media_type: "",
+    overview: "",
+    poster_path: "",
+    vote_average: 0,
+    name: "",
+  },
+}: IDetail) {
   const routeState = useAtomValue(routeStateAtom);
   const location = useLocation();
   const keyword = new URLSearchParams(location.search).get("keyword");

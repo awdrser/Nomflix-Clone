@@ -44,11 +44,10 @@ function Series() {
     path: "/series/:id",
   });
 
-  const clickedSeries =
-    bigSeriesMatch?.isExact &&
-    (dataOnTheAir?.results.find(
-      (series) => series.id + "" === bigSeriesMatch.params.id
-    ) ||
+  const clickedSeries = bigSeriesMatch?.isExact
+    ? dataOnTheAir?.results.find(
+        (series) => series.id + "" === bigSeriesMatch.params.id
+      ) ||
       dataPopular?.results.find(
         (series) => series.id + "" === bigSeriesMatch.params.id
       ) ||
@@ -57,7 +56,8 @@ function Series() {
       ) ||
       datAiringToday?.results.find(
         (series) => series.id + "" === bigSeriesMatch.params.id
-      ));
+      )
+    : undefined;
 
   return (
     <Wrapper>
@@ -75,7 +75,7 @@ function Series() {
           >
             <Title>{dataOnTheAir?.results[0].name}</Title>
             <Overview>
-              {shortOverview(dataOnTheAir?.results[0].overview)}
+              {shortOverview(dataOnTheAir?.results[0].overview ?? "")}
             </Overview>
           </Banner>
 

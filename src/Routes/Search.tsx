@@ -52,9 +52,9 @@ function Search() {
 
   const bigItemMatch = useRouteMatch<{ id: string }>("/search/:id");
 
-  const clickedItem =
-    bigItemMatch?.isExact &&
-    data?.results.find((i) => i.id.toString() === bigItemMatch.params.id);
+  const clickedItem = bigItemMatch?.isExact
+    ? data?.results.find((i) => i.id.toString() === bigItemMatch.params.id)
+    : undefined;
 
   return (
     <>

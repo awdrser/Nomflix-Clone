@@ -13,7 +13,7 @@ import { Box, Info, Row } from "../styled.d";
 import { makeImagePath } from "../utils";
 
 interface ISliderProps {
-  data: IGetMoviesResult | IGetNowPlayingResult | IGetSeriesResult | undefined;
+  data?: IGetMoviesResult | IGetNowPlayingResult | IGetSeriesResult;
   title?: string;
   style?: React.CSSProperties;
   keyPrefix: string;
@@ -105,7 +105,17 @@ const OuterContainer = styled.div`
   padding-top: 100px;
 `;
 
-function Slider({ data, title, keyPrefix }: ISliderProps) {
+function Slider({
+  data = {
+    page: 1,
+    dates: { maximum: "", minimum: "" },
+    results: [],
+    total_pages: 0,
+    total_results: 0,
+  },
+  title,
+  keyPrefix,
+}: ISliderProps) {
   const history = useHistory();
   const onBoxClicked = (id: number) => {
     if (!data) return null;

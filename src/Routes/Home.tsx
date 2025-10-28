@@ -14,7 +14,7 @@ import Slider from "../Components/Slider";
 import { Banner, Loader, Overview, Title, Wrapper } from "../styled.d";
 import { makeImagePath } from "../utils";
 
-export function shortOverview(text: string | undefined) {
+export function shortOverview(text: string) {
   if (!text) return null;
   const maxLen = 120;
   return text.length > maxLen ? text.slice(0, maxLen) + "..." : text;
@@ -43,17 +43,17 @@ function Home() {
     path: "/movies/:movieId",
   });
 
-  const clickedMovie =
-    bigMovieMatch?.isExact &&
-    (dataNow?.results.find(
-      (movie) => movie.id + "" === bigMovieMatch.params.movieId
-    ) ||
+  const clickedMovie = bigMovieMatch?.isExact
+    ? dataNow?.results.find(
+        (movie) => movie.id + "" === bigMovieMatch.params.movieId
+      ) ||
       dataTopRated?.results.find(
         (movie) => movie.id + "" === bigMovieMatch.params.movieId
       ) ||
       dataUpcoming?.results.find(
         (movie) => movie.id + "" === bigMovieMatch.params.movieId
-      ));
+      )
+    : undefined;
 
   return (
     <Wrapper>
@@ -65,7 +65,9 @@ function Home() {
             bgPhoto={makeImagePath(dataNow?.results[0].backdrop_path || "")}
           >
             <Title>{dataNow?.results[0].title}</Title>
-            <Overview>{shortOverview(dataNow?.results[0].overview)}</Overview>
+            <Overview>
+              {shortOverview(dataNow?.results[0].overview ?? "")}
+            </Overview>
           </Banner>
           <Slider data={dataNow} title="Now Playing" keyPrefix="now_" />
           <Slider
